@@ -5,7 +5,7 @@ import {
   FiPlus,
 } from "react-icons/fi";
 
-import { exportarExcel } from "../../utils/exportarExcel";
+import { exportarExcel } from "../../Utils/exportarExcel";
 
 function BarraPesquisa({
   pesquisa,

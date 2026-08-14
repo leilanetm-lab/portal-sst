@@ -3,7 +3,7 @@ import "./ResumoSolicitacao.css";
 import TimelineWorkflow from "../workflow/TimelineWorkflow";
 
 import PublicarDocumento
-    from "../publicarDocumento/PublicarDocumento";
+    from "../PublicarDocumento/PublicarDocumento";
 
 import logoManserv
     from "../../assets/logo-manserv.png";
