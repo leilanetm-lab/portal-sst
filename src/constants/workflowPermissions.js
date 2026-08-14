@@ -1,0 +1,11 @@
+export const WORKFLOW_PERMISSIONS = {
+
+    UT: "UT",
+
+    ENGENHARIA: "ENGENHARIA",
+
+    SAUDE: "SAUDE",
+
+    ADMINISTRADOR: "ADMINISTRADOR"
+
+};

@@ -1,0 +1,103 @@
+.timelineWorkflow{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    justify-content:space-between;
+
+    width:100%;
+
+    margin:40px 0;
+
+}
+
+.itemWorkflow{
+
+    display:flex;
+
+    align-items:center;
+
+    flex:1;
+
+}
+
+.passoWorkflow{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    min-width:140px;
+
+    z-index:2;
+
+}
+
+.iconeWorkflow{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:50%;
+
+    background:#d8dde7;
+
+    color:#fff;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:26px;
+
+    font-weight:700;
+
+    transition:.3s;
+
+}
+
+.passoWorkflow.ativo .iconeWorkflow{
+
+    background:#2e7d32;
+
+}
+
+.passoWorkflow span{
+
+    margin-top:12px;
+
+    text-align:center;
+
+    font-weight:600;
+
+    color:#344563;
+
+    font-size:18px;
+
+}
+
+.linhaWorkflow{
+
+    flex:1;
+
+    height:5px;
+
+    background:#d8dde7;
+
+    margin:0 15px;
+
+    margin-top:28px;
+
+}
+
+.linhaWorkflow.ativa{
+
+    background:#2e7d32;
+
+}

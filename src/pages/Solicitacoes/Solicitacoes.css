@@ -1,0 +1,1384 @@
+.card{
+
+    background:#ffffff;
+
+    border-radius:14px;
+
+    padding:30px;
+
+    margin-bottom:25px;
+
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+
+}
+
+.card h2{
+
+    color:#2d4059;
+
+    text-align:center;
+
+    margin-bottom:10px;
+
+}
+
+.descricao{
+
+    text-align:center;
+
+    color:#666;
+
+    margin-bottom:25px;
+
+    line-height:1.5;
+
+}
+
+.campo{
+
+    display:flex;
+
+    flex-direction:column;
+
+    margin-top:20px;
+
+}
+
+.campo label{
+
+    font-weight:700;
+
+    color:#2d4059;
+
+    margin-bottom:8px;
+
+}
+
+.campo small{
+
+    color:#888;
+
+    margin-bottom:10px;
+
+}
+
+.campo input,
+
+.campo select,
+
+.campo textarea{
+
+    padding:14px;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+    transition:.2s;
+
+    font-family:inherit;
+
+}
+
+.campo input:focus,
+
+.campo select:focus,
+
+.campo textarea:focus{
+
+    outline:none;
+
+    border-color:#ff6b00;
+
+    box-shadow:0 0 0 3px rgba(255,107,0,.15);
+
+}
+
+textarea{
+
+    resize:vertical;
+
+}
+
+.linha{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:20px;
+
+}
+
+.mensagem{
+
+    margin-top:20px;
+
+    padding:16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+}
+
+.mensagem.sucesso{
+
+    background:#e8f7ec;
+
+    color:#18783a;
+
+    border-left:5px solid #2e7d32;
+
+}
+
+.mensagem.erro{
+
+    background:#fdeaea;
+
+    color:#c62828;
+
+    border-left:5px solid #d32f2f;
+
+}
+
+.alertaCadastro{
+
+    background:#fff4e5;
+
+    color:#c96d00;
+
+    border-left:5px solid #ff6b00;
+
+    padding:18px;
+
+    border-radius:10px;
+
+    margin:20px 0;
+
+    font-weight:600;
+
+}
+
+button{
+
+    background:#ff6b00;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:14px 24px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.2s;
+
+}
+
+button:hover{
+
+    background:#e65f00;
+
+}
+/* =======================================
+   Dados da Função
+======================================= */
+
+.checkboxCampo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin:20px 0;
+
+}
+
+.checkboxCampo input{
+
+    width:18px;
+
+    height:18px;
+
+    cursor:pointer;
+
+}
+
+.checkboxCampo label{
+
+    margin:0;
+
+    font-weight:500;
+
+    cursor:pointer;
+
+}
+
+.radioGrupo{
+
+    display:flex;
+
+    gap:35px;
+
+    margin-top:15px;
+
+    flex-wrap:wrap;
+
+}
+
+.radioGrupo label{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    cursor:pointer;
+
+    font-weight:500;
+
+}
+
+.radioGrupo input{
+
+    width:18px;
+
+    height:18px;
+
+}
+
+.divisor{
+
+    border:none;
+
+    border-top:1px solid #ececec;
+
+    margin:30px 0;
+
+}
+
+.campo small{
+
+    margin-top:8px;
+
+    color:#888;
+
+    font-size:13px;
+
+}
+/* ==========================================
+   Modal Nova Função
+========================================== */
+
+.modalOverlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+.modalNovaFuncao{
+
+    width:700px;
+
+    max-width:95%;
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:35px;
+
+    box-shadow:0 20px 50px rgba(0,0,0,.20);
+
+    animation:abrirModal .25s ease;
+
+}
+
+@keyframes abrirModal{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(-20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+.modalNovaFuncao h2{
+
+    margin:0;
+
+    color:#d75d00;
+
+}
+
+.modalNovaFuncao p{
+
+    color:#666;
+
+    margin:15px 0 30px;
+
+    line-height:1.6;
+
+}
+
+.modalNovaFuncao textarea{
+
+    resize:vertical;
+
+}
+.inputGHE{
+
+    display:flex;
+
+    align-items:stretch;
+
+    width:100%;
+
+    margin-top:8px;
+
+}
+
+.inputGHE span{
+
+    min-width:70px;
+
+    height:48px;
+
+    border:1px solid #d9d9d9;
+
+    border-right:none;
+
+    border-radius:8px 0 0 8px;
+
+    background:#f5f5f5;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:600;
+
+    color:#555;
+
+    box-sizing:border-box;
+
+}
+
+.inputGHE input{
+
+    flex:1;
+
+    height:48px;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:0 8px 8px 0 !important;
+
+    box-sizing:border-box;
+
+}
+.contadorCaracteres{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    margin-top:8px;
+
+    font-size:13px;
+
+    color:#777;
+
+}
+.obrigatorio{
+
+    color:#d32f2f;
+
+    font-weight:700;
+
+}
+.autocomplete{
+
+    position:relative;
+
+    width:100%;
+
+}
+
+.listaAutocomplete{
+
+    position:absolute;
+
+    top:calc(100% + 4px);
+
+    left:0;
+
+    right:0;
+
+    background:#fff;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:10px;
+
+    max-height:260px;
+
+    overflow-y:auto;
+
+    z-index:9999;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+
+}
+
+.itemAutocomplete{
+
+    padding:12px 15px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    border-bottom:1px solid #efefef;
+
+}
+
+.itemAutocomplete:last-child{
+
+    border-bottom:none;
+
+}
+
+.itemAutocomplete:hover{
+
+    background:#f2f6ff;
+
+}
+.itemAutocomplete.ativo{
+
+    background:#edf4ff;
+
+    color:#1f3c88;
+
+    font-weight:600;
+
+}
+
+.itemAutocomplete.vazio{
+
+    cursor:default;
+
+    color:#777;
+
+    font-style:italic;
+
+}
+
+.itemAutocomplete.vazio:hover{
+
+    background:#fff;
+
+}
+/* ==========================================
+   Card de Risco
+========================================== */
+
+.cardRisco{
+
+    background:#fff;
+
+    border-radius:14px;
+
+    margin-bottom:24px;
+
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+
+    overflow:hidden;
+
+}
+
+.cabecalhoRisco{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:18px 20px;
+
+    background:#fafafa;
+
+}
+
+.cabecalhoRisco h3{
+
+    margin:5px 0 0;
+
+    color:#2d4059;
+
+}
+
+.cabecalhoRisco small{
+
+    color:#777;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+
+}
+
+.acoesCard{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.btnExpandir{
+
+    width:auto;
+
+    height:38px;
+
+    padding:0 14px;
+
+    font-size:13px;
+
+}
+
+.btnExcluir{
+
+    width:38px;
+
+    height:38px;
+
+}
+
+.btnExpandir{
+
+    background:#ececec;
+
+}
+
+.btnExcluir{
+
+    background:#d32f2f;
+
+    color:white;
+
+}
+
+.btnExcluir:hover{
+
+    background:#b71c1c;
+
+}
+
+.cardRisco .campo{
+
+    padding:0 20px;
+
+    margin-top:10px;
+
+}
+
+.cardRisco .linha{
+
+    padding:0 20px 8px;
+
+}
+/* ==========================================
+   Status do Card de Risco
+========================================== */
+
+.statusRisco{
+
+    display:inline-block;
+
+    padding:7px 14px;
+
+    border-radius:30px;
+
+    color:#fff;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    margin-bottom:8px;
+
+    letter-spacing:.8px;
+
+}
+
+.categoriaRisco{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:30px;
+
+    color:#fff;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    margin-bottom:12px;
+
+    letter-spacing:.8px;
+
+}
+
+.cardRisco{
+
+    transition:.25s;
+
+}
+
+.cardRisco:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+
+}
+
+.cabecalhoRisco{
+
+    min-height:auto;
+
+    padding:18px 22px;
+
+    align-items:flex-start;
+
+}
+
+.cabecalhoRisco h3{
+
+    margin-top:10px;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    line-height:1.4;
+
+}
+
+.btnExpandir{
+
+    background:#ececec;
+
+    color:#555;
+
+}
+
+.btnExpandir:hover{
+
+    background:#d8d8d8;
+
+}
+
+.btnExcluir{
+
+    background:#d32f2f;
+
+}
+
+.btnExcluir:hover{
+
+    background:#b71c1c;
+
+}
+
+.cardRisco textarea{
+
+    min-height:85px;
+
+}
+
+.cardRisco input{
+
+    height:50px;
+
+}
+
+.cardRisco .checkboxCampo{
+
+    margin-top:15px;
+
+    margin-bottom:5px;
+
+}
+
+.cardRisco .contadorCaracteres{
+
+    margin-bottom:10px;
+
+}
+
+.cardRisco .linha{
+
+    align-items:flex-start;
+
+}
+
+.cardRisco .campo{
+
+    margin-top:10px;
+
+}
+
+.cardRisco .campo:last-child{
+
+    padding-bottom:20px;
+
+}
+/* ==========================================
+   Painel Resumo dos Riscos
+========================================== */
+
+.painelResumoRiscos{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:18px;
+
+    margin:30px 0;
+
+}
+
+.resumoCard{
+
+    background:#fff;
+
+    border-radius:14px;
+
+    padding:16px;
+
+    text-align:center;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+    border-top:5px solid #ff6b00;
+
+    transition:.25s;
+
+}
+
+.resumoCard:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.resumoCard.completo{
+
+    border-top-color:#2e7d32;
+
+}
+
+.resumoCard.pendente{
+
+    border-top-color:#d32f2f;
+
+}
+
+.numeroResumo{
+
+    font-size:28px;
+
+    font-weight:700;
+
+    color:#2d4059;
+
+    margin-bottom:8px;
+
+}
+
+.tituloResumo{
+
+    font-size:15px;
+
+    font-weight:600;
+
+    color:#666;
+
+}
+.btnExpandir:hover{
+
+    transform:scale(1.08);
+
+}
+
+.btnExcluir:hover{
+
+    transform:scale(1.08);
+
+}
+.subtituloRisco{
+
+    margin:4px 0 0;
+
+    color:#777;
+
+    font-size:13px;
+
+    font-style:italic;
+
+}
+
+.tituloGrupo{
+
+    margin:20px 20px 10px;
+
+    padding:8px 14px;
+
+    background:#f8f9fb;
+
+    border-left:4px solid #ff6b00;
+
+    border-bottom:none;
+
+    border-radius:8px;
+
+    color:#2d4059;
+
+    font-size:15px;
+
+    font-weight:700;
+
+}
+.funcoes-cadastradas{
+
+    margin:25px 0;
+
+}
+
+.funcoes-cadastradas h3{
+
+    margin-bottom:15px;
+
+}
+
+.card-funcao{
+
+    background:#fff;
+
+    border:1px solid #dfe5ec;
+
+    border-left:5px solid #2563eb;
+
+    border-radius:10px;
+
+    padding:15px;
+
+    margin-bottom:12px;
+
+    box-shadow:0 2px 6px rgba(0,0,0,.08);
+
+}
+
+.card-funcao h4{
+
+    margin:0 0 10px 0;
+
+    color:#1f3b73;
+
+}
+
+.card-funcao p{
+
+    margin:4px 0;
+
+    color:#555;
+
+}
+.acoes-funcao{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-top:18px;
+
+}
+
+.btn-editar,
+.btn-excluir{
+
+    width:auto;
+
+    min-width:110px;
+
+    padding:8px 16px;
+
+    border:none;
+
+    border-radius:8px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    flex:none;
+
+}
+
+.btn-editar{
+
+    background:#1976d2;
+
+    color:#fff;
+
+}
+
+.btn-editar:hover{
+
+    background:#1565c0;
+
+}
+
+.btn-excluir{
+
+    background:#e53935;
+
+    color:#fff;
+
+}
+
+.btn-excluir:hover{
+
+    background:#c62828;
+
+}
+/* ==========================================
+   Lançamento LTCAT
+========================================== */
+
+.radioOpcao{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-top:12px;
+
+    cursor:pointer;
+
+    font-weight:500;
+
+}
+
+.radioOpcao input{
+
+    width:18px;
+
+    height:18px;
+
+    cursor:pointer;
+
+}
+
+.linhaGHE{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-top:10px;
+
+    justify-content:flex-start;
+
+}
+
+.linhaGHE input{
+
+    width:140px;
+
+}
+
+.btnAdicionarGHE{
+
+    width:170px !important;
+
+    min-width:170px;
+
+    max-width:170px;
+
+    flex:none;
+
+    height:48px;
+
+    padding:0 24px;
+
+    white-space:nowrap;
+
+}
+
+.listaGHE{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+
+    margin-top:20px;
+
+}
+
+.chipGHE{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:10px 16px;
+
+    background:#f5f8ff;
+
+    border:1px solid #d6e4ff;
+
+    border-radius:999px;
+
+    color:#2d4059;
+
+    font-weight:600;
+
+    transition:.2s;
+
+}
+
+.chipGHE:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+
+}
+
+.btnRemoverGHE{
+
+    background:transparent;
+
+    border:none;
+
+    color:#d32f2f;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    padding:0;
+
+    width:20px;
+
+    height:20px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.btnRemoverGHE:hover{
+
+    background:transparent;
+
+    color:#b71c1c;
+
+}
+
+.tituloListaGHE{
+
+    margin-top:25px;
+
+    margin-bottom:10px;
+
+    color:#2d4059;
+
+    font-weight:700;
+
+    font-size:15px;
+
+}
+
+@media (max-width:768px){
+
+    .linhaGHE{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .linhaGHE input{
+
+    width:130px !important;
+
+    flex:none !important;
+
+}
+
+    .btnAdicionarGHE{
+
+        width:100%;
+
+    }
+
+}
+/* ==========================
+   REVISÃO ANUAL
+========================== */
+
+.subtituloRevisao{
+
+    text-align:center;
+
+    font-size:18px;
+
+    color:#555;
+
+    margin-bottom:35px;
+
+}
+
+.cardsRevisao{
+
+    display:flex;
+
+    gap:24px;
+
+    justify-content:center;
+
+    align-items:stretch;
+
+    flex-wrap:wrap;
+
+    margin-bottom:35px;
+
+}
+
+.cardRevisao{
+
+    flex:1;
+
+    min-width:320px;
+
+    max-width:520px;
+
+    padding:28px;
+
+    border:2px solid #dcdcdc;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    background:#fff;
+
+    transition:.25s;
+
+    box-shadow:0 4px 14px rgba(0,0,0,.05);
+
+    justify-content:center;
+
+text-align:center;
+
+}
+
+.cardRevisao:hover{
+
+    transform:translateY(-4px);
+
+    border-color:#ff6b00;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+
+}
+
+.cardRevisao input{
+
+    margin-top:6px;
+
+    transform:scale(1.35);
+
+    cursor:pointer;
+
+}
+
+.cardRevisao h3{
+
+    margin:0;
+
+    color:#222;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+.cardRevisao p{
+
+    margin-top:10px;
+
+    color:#666;
+
+    line-height:1.6;
+
+    font-size:15px;
+
+}
+
+.cardRevisao.selecionado{
+
+    border-color:#ff6b00;
+
+    background:#fff7f1;
+
+    box-shadow:0 10px 30px rgba(255,107,0,.20);
+
+}
+
+.cardRevisao.selecionado h3{
+
+    color:#ff6b00;
+
+}
+
+@media(max-width:900px){
+
+    .cardsRevisao{
+
+        flex-direction:column;
+
+    }
+
+    .cardRevisao{
+
+        max-width:100%;
+
+    }
+
+}
+.cardRevisao input{
+
+    display:none;
+
+}
+.campoTextoGrande{
+
+    width:100%;
+
+    min-height:220px;
+
+    padding:16px;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:12px;
+
+    font-size:15px;
+
+    font-family:inherit;
+
+    line-height:1.6;
+
+    resize:vertical;
+
+    transition:.2s;
+
+    background:#fff;
+
+    box-sizing:border-box;
+
+}
+
+.campoTextoGrande:focus{
+
+    outline:none;
+
+    border-color:#ff6b00;
+
+    box-shadow:0 0 0 4px rgba(255,107,0,.12);
+
+}
+
+.campoTextoGrande::placeholder{
+
+    color:#8b8b8b;
+
+    line-height:1.6;
+
+}

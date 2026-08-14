@@ -1,0 +1,229 @@
+.segurancaPagina {
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    padding: 35px;
+}
+
+
+.btnVoltarSeguranca {
+    border: none;
+
+    background: transparent;
+
+    color: #263b59;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    margin-bottom: 25px;
+
+    font-size: 14px;
+}
+
+
+.segurancaCabecalho {
+    margin-bottom: 25px;
+}
+
+
+.segurancaCabecalho h1 {
+    margin: 0 0 8px;
+
+    color: #ff6900;
+
+    font-size: 32px;
+}
+
+
+.segurancaCabecalho p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 15px;
+}
+
+
+.segurancaCard {
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.06);
+}
+
+
+.segurancaTitulo {
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    padding-bottom: 25px;
+
+    border-bottom: 1px solid #edf0f4;
+
+    margin-bottom: 25px;
+}
+
+
+.segurancaIcone {
+    width: 55px;
+
+    height: 55px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #fff1e8;
+
+    border-radius: 12px;
+
+    font-size: 28px;
+}
+
+
+.segurancaTitulo h2 {
+    margin: 0 0 5px;
+
+    color: #263b59;
+
+    font-size: 21px;
+}
+
+
+.segurancaTitulo p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+
+.campoSeguranca {
+    margin-bottom: 20px;
+}
+
+
+.campoSeguranca label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #263b59;
+
+    font-weight: 600;
+
+    font-size: 14px;
+}
+
+
+.campoSeguranca input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 13px 15px;
+
+    border: 1px solid #d8dee8;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+
+.campoSeguranca input:focus {
+    border-color: #ff6900;
+
+    box-shadow:
+        0 0 0 3px rgba(255, 105, 0, 0.10);
+}
+
+
+.dicaSenha {
+    padding: 14px;
+
+    background: #fff7ed;
+
+    border-left: 4px solid #ff6900;
+
+    border-radius: 7px;
+
+    color: #7c4a03;
+
+    font-size: 13px;
+
+    margin-top: 10px;
+}
+
+
+.acoesSeguranca {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    margin-top: 30px;
+}
+
+
+.btnCancelarSeguranca {
+    padding: 12px 20px;
+
+    border: 1px solid #d8dee8;
+
+    background: white;
+
+    border-radius: 8px;
+
+    color: #475569;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.btnSalvarSenha {
+    padding: 12px 24px;
+
+    border: none;
+
+    background: #ff6900;
+
+    color: white;
+
+    border-radius: 8px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.btnSalvarSenha:hover {
+    background: #e85d00;
+}
+
+
+.btnSalvarSenha:disabled,
+.btnCancelarSeguranca:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}

@@ -1,0 +1,95 @@
+.mesaTrabalho{
+
+    padding:30px;
+
+}
+
+.cabecalhoMesa{
+
+    margin-bottom:30px;
+
+}
+
+.cabecalhoMesa h1{
+
+    color:#2d4059;
+
+    margin-bottom:10px;
+
+}
+
+.cabecalhoMesa p{
+
+    color:#666;
+
+}
+
+.cardMesa{
+
+    background:#fff;
+
+    padding:25px;
+
+    border-radius:18px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+    margin-top:20px;
+
+}
+
+.tabelaMesa{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:20px;
+
+}
+
+.tabelaMesa th{
+
+    background:#f5f5f5;
+
+    padding:14px;
+
+    text-align:left;
+
+}
+
+.tabelaMesa td{
+
+    padding:14px;
+
+    border-top:1px solid #eee;
+
+    text-align:center;
+
+}
+
+.btnNova{
+
+    margin-top:20px;
+
+    background:#d75d00;
+
+    color:white;
+
+    border:none;
+
+    padding:14px 24px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+}
+
+.btnNova:hover{
+
+    background:#b84d00;
+
+}

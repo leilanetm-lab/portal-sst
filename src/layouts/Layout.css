@@ -1,0 +1,961 @@
+/* ==========================
+   Layout Geral
+========================== */
+
+.layout {
+
+    display: flex;
+
+    min-height: 100vh;
+
+    background: #f5f7fb;
+
+}
+
+
+/* ==========================
+   Sidebar
+========================== */
+
+.sidebar {
+
+    width: 260px;
+
+    background: #1f2430;
+
+    color: #fff;
+
+    position: fixed;
+
+    left: 0;
+
+    top: 0;
+
+    height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    box-shadow: 4px 0 20px rgba(0,0,0,.12);
+
+    z-index: 1000;
+
+}
+
+
+.sidebarLogo {
+
+    padding: 30px 25px;
+
+    border-bottom: 1px solid rgba(255,255,255,.08);
+
+}
+
+
+.sidebarLogo h2 {
+
+    margin: 0;
+
+    font-size: 24px;
+
+}
+
+
+.sidebarLogo span {
+
+    display: block;
+
+    margin-top: 8px;
+
+    color: #c5c5c5;
+
+    font-size: 13px;
+
+}
+
+
+.sidebarMenu {
+
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    padding: 20px 12px;
+
+    overflow-y: auto;
+
+}
+
+
+.menuItem {
+
+    color: #d9d9d9;
+
+    text-decoration: none;
+
+    padding: 14px 16px;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    transition: .25s;
+
+}
+
+
+.menuItem:hover {
+
+    background: rgba(255,255,255,.08);
+
+    color: #fff;
+
+}
+
+
+.menuItem.active {
+
+    background: #ff6b00;
+
+    color: #fff;
+
+}
+
+
+.sidebarRodape {
+
+    padding: 22px;
+
+    border-top: 1px solid rgba(255,255,255,.08);
+
+    background: #1f2430;
+
+    flex-shrink: 0;
+
+}
+
+
+.sidebarRodape strong {
+
+    display: block;
+
+    font-size: 15px;
+
+}
+
+
+.sidebarRodape small {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #c7c7c7;
+
+    font-size: 13px;
+
+}
+
+
+/* ==========================
+   Área Principal
+========================== */
+
+.layoutPrincipal {
+
+    margin-left: 260px;
+
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-width: 0;
+
+    overflow-x: hidden;
+
+}
+
+
+/* ==========================
+   Header
+========================== */
+
+.header {
+
+    height: 82px;
+
+    background: #fff;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 0 35px;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+
+}
+
+
+.headerEsquerda h1 {
+
+    margin: 0;
+
+    color: #2d4059;
+
+    font-size: 28px;
+
+}
+
+
+.headerEsquerda span {
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+/* ==========================
+   Área Direita
+========================== */
+
+.headerDireita {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    flex-shrink: 0;
+
+}
+
+
+/* ==========================
+   Notificações
+========================== */
+
+.btnNotificacao {
+
+    position: relative;
+
+    background: #f3f5fa;
+
+    color: #2d4059;
+
+    width: 48px;
+
+    height: 48px;
+
+    min-width: 48px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    transition: .25s;
+
+    flex-shrink: 0;
+
+}
+
+
+.btnNotificacao:hover {
+
+    background: #eceff5;
+
+}
+
+
+.badgeNotificacao {
+
+    position: absolute;
+
+    top: -4px;
+
+    right: -2px;
+
+    width: 22px;
+
+    height: 22px;
+
+    background: #ff6b00;
+
+    color: #fff;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================
+   Usuário
+========================== */
+
+.usuarioHeader {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 0;
+
+}
+
+
+.usuarioHeader > div:first-child {
+
+    min-width: 0;
+
+    text-align: right;
+
+}
+
+
+.usuarioHeader strong {
+
+    display: block;
+
+    color: #2d4059;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    max-width: 260px;
+
+}
+
+
+.usuarioHeader small {
+
+    display: block;
+
+    margin-top: 3px;
+
+    color: #777;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================
+   Avatar
+========================== */
+
+.avatarUsuario {
+
+    width: 46px;
+
+    height: 46px;
+
+    min-width: 46px;
+
+    border-radius: 50%;
+
+    background: #ff6b00;
+
+    color: #fff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    flex-shrink: 0;
+
+}
+
+
+/* ==========================
+   Botão Sair
+========================== */
+
+.btnSair {
+
+    border: none;
+
+    background: #ff6b00;
+
+    color: #fff;
+
+    height: 40px;
+
+    min-width: 72px;
+
+    padding: 0 16px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+    flex-shrink: 0;
+
+}
+
+
+.btnSair:hover {
+
+    background: #e85f00;
+
+}
+
+
+.btnSair:disabled {
+
+    opacity: .6;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ==========================
+   Conteúdo
+========================== */
+
+.layoutConteudo {
+
+    flex: 1;
+
+    padding: 30px;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    box-sizing: border-box;
+
+    width: 100%;
+
+    min-width: 0;
+
+}
+/* ==================================================
+   CORREÇÃO FINAL DO CABEÇALHO
+================================================== */
+
+.header {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+
+/* Área direita */
+
+.headerDireita {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 18px !important;
+    flex-shrink: 0 !important;
+    width: auto !important;
+}
+
+
+/* Notificação */
+
+.btnNotificacao {
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    height: 48px !important;
+    flex-shrink: 0 !important;
+}
+
+
+/* Usuário */
+
+.usuarioHeader {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: auto !important;
+    max-width: 320px !important;
+    min-width: 180px !important;
+    flex-shrink: 1 !important;
+}
+
+
+.usuarioHeader > div:first-child {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 240px !important;
+    flex: 1 !important;
+}
+
+
+.usuarioHeader strong {
+    display: block !important;
+
+    white-space: nowrap !important;
+
+    overflow: hidden !important;
+
+    text-overflow: ellipsis !important;
+
+    max-width: 240px !important;
+
+    font-size: 15px !important;
+}
+
+
+.usuarioHeader small {
+    display: block !important;
+
+    white-space: nowrap !important;
+}
+
+
+/* Avatar */
+
+.avatarUsuario {
+    width: 46px !important;
+    min-width: 46px !important;
+    max-width: 46px !important;
+
+    height: 46px !important;
+
+    flex-shrink: 0 !important;
+
+    border-radius: 50% !important;
+}
+
+
+/* ==================================================
+   BOTÃO SAIR
+================================================== */
+
+.btnSair {
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    width: 78px !important;
+
+    min-width: 78px !important;
+
+    max-width: 78px !important;
+
+    height: 40px !important;
+
+    padding: 0 !important;
+
+    margin: 0 !important;
+
+    flex: 0 0 78px !important;
+
+    border: none !important;
+
+    border-radius: 9px !important;
+
+    background: #ff6b00 !important;
+
+    color: #fff !important;
+
+    font-size: 13px !important;
+
+    font-weight: 700 !important;
+
+    cursor: pointer !important;
+
+    box-sizing: border-box !important;
+}
+
+
+.btnSair:hover {
+    background: #e85f00 !important;
+}
+
+
+.btnSair:disabled {
+    opacity: .6 !important;
+
+    cursor: not-allowed !important;
+}
+
+/* =====================================================
+   NOTIFICAÇÕES
+===================================================== */
+
+.areaNotificacao {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+
+.btnNotificacao {
+    position: relative;
+
+    width: 52px;
+    height: 52px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #f4f6fa;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.btnNotificacao:hover {
+    background: #e9edf5;
+
+    transform: translateY(-1px);
+}
+
+
+.badgeNotificacao {
+    position: absolute;
+
+    top: -3px;
+    right: -2px;
+
+    min-width: 21px;
+    height: 21px;
+
+    padding: 0 5px;
+
+    border-radius: 20px;
+
+    background: #ff6900;
+
+    color: white;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid white;
+}
+
+
+/* =====================================================
+   PAINEL
+===================================================== */
+
+.painelNotificacoes {
+    position: absolute;
+
+    top: 62px;
+    right: 0;
+
+    width: 390px;
+
+    background: white;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 12px 35px rgba(
+            0,
+            0,
+            0,
+            0.18
+        );
+
+    border: 1px solid #e5e8ee;
+
+    overflow: hidden;
+
+    z-index: 9999;
+}
+
+
+/* =====================================================
+   CABEÇALHO
+===================================================== */
+
+.cabecalhoNotificacoes {
+    padding: 16px 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border-bottom: 1px solid #edf0f4;
+}
+
+
+.cabecalhoNotificacoes strong {
+    font-size: 16px;
+
+    color: #233b63;
+}
+
+
+.btnMarcarLidas {
+    border: none;
+
+    background: transparent;
+
+    color: #ff6900;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.btnMarcarLidas:hover {
+    text-decoration: underline;
+}
+
+
+/* =====================================================
+   LISTA
+===================================================== */
+
+.listaNotificacoes {
+    max-height: 450px;
+
+    overflow-y: auto;
+}
+
+
+/* =====================================================
+   ITEM
+===================================================== */
+
+.itemNotificacao {
+    width: 100%;
+
+    border: none;
+
+    background: white;
+
+    padding: 14px 16px;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    border-bottom: 1px solid #f0f2f5;
+
+    transition:
+        background 0.2s ease;
+}
+
+
+.itemNotificacao:hover {
+    background: #f7f9fc;
+}
+
+
+.itemNotificacao.naoLida {
+    background: #fff7ef;
+}
+
+
+.itemNotificacao.naoLida:hover {
+    background: #fff1df;
+}
+
+
+/* =====================================================
+   ÍCONE
+===================================================== */
+
+.iconeNotificacao {
+    width: 38px;
+    height: 38px;
+
+    min-width: 38px;
+
+    border-radius: 10px;
+
+    background: #fff0e5;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   CONTEÚDO
+===================================================== */
+
+.conteudoNotificacao {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.conteudoNotificacao strong {
+    display: block;
+
+    color: #233b63;
+
+    font-size: 13px;
+
+    margin-bottom: 4px;
+}
+
+
+.conteudoNotificacao p {
+    margin: 0;
+
+    color: #52627a;
+
+    font-size: 12px;
+
+    line-height: 1.45;
+}
+
+
+.conteudoNotificacao small {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #8993a3;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   PONTO NÃO LIDO
+===================================================== */
+
+.pontoNaoLida {
+    width: 8px;
+    height: 8px;
+
+    min-width: 8px;
+
+    border-radius: 50%;
+
+    background: #ff6900;
+
+    margin-top: 7px;
+}
+
+
+/* =====================================================
+   SEM NOTIFICAÇÕES
+===================================================== */
+
+.semNotificacoes {
+    min-height: 220px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    color: #7d8797;
+
+    text-align: center;
+
+    padding: 30px;
+}
+
+
+.semNotificacoes div {
+    font-size: 35px;
+
+    opacity: 0.7;
+
+    margin-bottom: 5px;
+}
+
+
+.semNotificacoes strong {
+    color: #3d4d67;
+
+    font-size: 14px;
+}
+
+
+.semNotificacoes span {
+    font-size: 12px;
+}

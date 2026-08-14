@@ -1,0 +1,21 @@
+.graficoCard{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:28px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.graficoCard h2{
+
+    margin-bottom:20px;
+
+    color:#2d4059;
+
+    font-size:26px;
+
+}

@@ -1,0 +1,281 @@
+.meuPerfil {
+    width: 100%;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+
+/* ============================
+   CABEÇALHO
+============================ */
+
+.perfilCabecalho {
+    margin-bottom: 30px;
+}
+
+.perfilCabecalho h1 {
+    margin: 0 0 8px;
+    color: #ff6900;
+    font-size: 32px;
+}
+
+.perfilCabecalho p {
+    margin: 0;
+    color: #64748b;
+    font-size: 16px;
+}
+
+
+/* ============================
+   CARDS
+============================ */
+
+.perfilCard {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, 0.07);
+}
+
+
+/* ============================
+   TÍTULO
+============================ */
+
+.perfilTitulo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    margin-bottom: 25px;
+}
+
+.perfilIcone {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #fff1e8;
+    border-radius: 12px;
+
+    font-size: 26px;
+}
+
+.perfilTitulo h2 {
+    margin: 0 0 5px;
+
+    color: #263b59;
+    font-size: 21px;
+}
+
+.perfilTitulo p {
+    margin: 0;
+
+    color: #64748b;
+    font-size: 14px;
+}
+
+
+/* ============================
+   GRID
+============================ */
+
+.perfilGrid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+/* ============================
+   CAMPOS
+============================ */
+
+.perfilCampo {
+    background: #f8fafc;
+
+    border: 1px solid #edf0f4;
+
+    border-radius: 10px;
+
+    padding: 17px 18px;
+}
+
+.perfilCampoGrande {
+    grid-column: span 2;
+}
+
+.perfilCampo span {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+.perfilCampo strong {
+    display: block;
+
+    color: #263b59;
+
+    font-size: 16px;
+}
+
+
+/* ============================
+   AVISO
+============================ */
+
+.perfilAviso {
+    margin-top: 22px;
+
+    padding: 14px 16px;
+
+    border-left: 4px solid #ff6900;
+
+    background: #fff7f0;
+
+    border-radius: 6px;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+
+/* ============================
+   LOADING / ERRO
+============================ */
+
+.perfilLoading,
+.perfilErro {
+    background: #ffffff;
+
+    padding: 40px;
+
+    border-radius: 16px;
+
+    text-align: center;
+
+    color: #64748b;
+}
+
+
+/* ============================
+   RESPONSIVO
+============================ */
+
+@media (max-width: 800px) {
+
+    .meuPerfil {
+        padding: 20px;
+    }
+
+    .perfilGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .perfilCampoGrande {
+        grid-column: span 1;
+    }
+
+}
+
+/* ============================
+   SEGURANÇA
+============================ */
+
+.segurancaLinha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+
+    padding: 20px;
+
+    background: #f8fafc;
+
+    border: 1px solid #edf0f4;
+
+    border-radius: 10px;
+}
+
+.segurancaLinha strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #263b59;
+
+    font-size: 16px;
+}
+
+.segurancaLinha p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+.btnAlterarSenha {
+    border: none;
+
+    background: #ff6900;
+
+    color: #ffffff;
+
+    padding: 12px 20px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition: 0.2s;
+}
+
+.btnAlterarSenha:hover {
+    background: #e85d00;
+}
+
+.btnAlterarSenha:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+@media (max-width: 700px) {
+
+    .segurancaLinha {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .btnAlterarSenha {
+        width: 100%;
+    }
+
+}

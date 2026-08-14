@@ -1,0 +1,158 @@
+.gridTipos{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+    gap:20px;
+
+    margin-top:30px;
+
+}
+
+.cardTipo{
+
+    background:white;
+
+    border:2px solid #ececec;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.cardTipo:hover{
+
+    border-color:#d75d00;
+
+    transform:translateY(-4px);
+
+}
+
+.cardTipo h3{
+
+    margin:0;
+
+    color:#2d4059;
+
+}
+
+.cardTipo p{
+
+    margin-top:12px;
+
+    color:#666;
+
+    line-height:1.5;
+
+}
+
+.cardTipo.ativo{
+
+    border-color:#d75d00;
+
+    background:#fff5ec;
+
+}
+/* ===========================
+   Tooltip
+=========================== */
+
+.tituloCard{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:15px;
+
+}
+
+.tooltip{
+
+    position:relative;
+
+    cursor:help;
+
+    font-size:18px;
+
+    color:#d75d00;
+
+    font-weight:bold;
+
+}
+
+.tooltipText{
+
+    visibility:hidden;
+
+    opacity:0;
+
+    position:absolute;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    bottom:140%;
+
+    width:320px;
+
+    background:#2c3e50;
+
+    color:white;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    font-size:13px;
+
+    line-height:1.5;
+
+    text-align:left;
+
+    transition:.25s;
+
+    z-index:1000;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.25);
+
+}
+
+.tooltip:hover .tooltipText{
+
+    visibility:visible;
+
+    opacity:1;
+
+}
+
+.tooltipText::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:100%;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    border-width:8px;
+
+    border-style:solid;
+
+    border-color:#2c3e50 transparent transparent transparent;
+
+}

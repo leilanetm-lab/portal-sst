@@ -1,0 +1,15 @@
+.editarSolicitacaoLoading {
+    min-height: 300px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 40px;
+}
+
+.editarSolicitacaoLoading h2 {
+    color: #2d4059;
+}

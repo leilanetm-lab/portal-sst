@@ -1,0 +1,539 @@
+.cadastro-ut{
+    padding:40px;
+}
+
+/* =======================
+   Cabeçalho
+======================= */
+
+.cabecalho{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.cabecalho h1{
+    margin:0;
+    color:#d75d00;
+    font-size:42px;
+    font-weight:700;
+}
+
+.cabecalho p{
+    margin-top:10px;
+    color:#666;
+    font-size:18px;
+}
+
+/* =======================
+   Barra de ações
+======================= */
+
+.acoes{
+
+    display:grid;
+
+    grid-template-columns:1fr auto;
+
+    gap:20px;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+.campo-pesquisa{
+
+    position:relative;
+
+    width:100%;
+
+}
+
+.campo-pesquisa input{
+
+    width:100%;
+
+    height:52px;
+
+    padding:0 20px 0 48px;
+
+    border:1px solid #ddd;
+
+    border-radius:12px;
+
+    font-size:15px;
+
+    outline:none;
+
+    transition:.25s;
+
+    box-sizing:border-box;
+
+}
+
+.campo-pesquisa input:focus{
+    border-color:#d75d00;
+    box-shadow:0 0 0 4px rgba(215,93,0,.12);
+}
+
+.icone-pesquisa{
+    position:absolute;
+    left:16px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#999;
+    font-size:18px;
+}
+
+/* =======================
+   Botões superiores
+======================= */
+
+.botoes{
+
+    display:flex;
+
+    gap:12px;
+
+    justify-content:flex-end;
+
+    flex-wrap:nowrap;
+
+}
+
+.atualizar,
+.exportar,
+.nova-ut{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    width:170px;
+
+    height:50px;
+
+    flex-shrink:0;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.25s;
+
+}
+
+.atualizar{
+    background:#efefef;
+    color:#444;
+}
+
+.atualizar:hover{
+    background:#ddd;
+}
+
+.exportar{
+    background:#2e7d32;
+    color:#fff;
+}
+
+.exportar:hover{
+    background:#256628;
+}
+
+.nova-ut{
+    background:#d75d00;
+    color:#fff;
+}
+
+.nova-ut:hover{
+    background:#b84f00;
+}
+
+/* =======================
+   Tabela
+======================= */
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:#fff;
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+th{
+
+    background:#fafafa;
+
+    color:#555;
+
+    padding:18px;
+
+    text-align:left;
+
+    font-size:16px;
+
+    font-weight:700;
+
+}
+
+td{
+
+    padding:16px 18px;
+
+    border-top:1px solid #efefef;
+
+    vertical-align:middle;
+
+}
+
+tbody tr{
+
+    transition:.2s;
+
+}
+
+tbody tr:hover{
+
+    background:#fafafa;
+
+}
+
+.sem-registro{
+
+    text-align:center;
+
+    padding:40px;
+
+    color:#777;
+
+    font-size:18px;
+
+}
+
+/* =======================
+   Unidade
+======================= */
+
+.numero-ut{
+
+    font-size:30px;
+
+    font-weight:700;
+
+    color:#2c3e50;
+
+}
+
+.nome-ut{
+
+    margin-top:4px;
+
+    font-size:15px;
+
+    color:#666;
+
+    font-weight:500;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    max-width:260px;
+
+}
+
+/* =======================
+   Local
+======================= */
+
+.local{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+}
+
+.icone-local{
+
+    color:#d75d00;
+
+    font-size:18px;
+
+}
+
+/* =======================
+   Status
+======================= */
+
+.status{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    padding:8px 14px;
+
+    border-radius:50px;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    white-space:nowrap;
+
+}
+
+.status::before{
+
+    content:"";
+
+    width:10px;
+
+    height:10px;
+
+    border-radius:50%;
+
+}
+
+/* =======================
+   Em dia
+======================= */
+
+.status.em-dia{
+
+    background:#dcfce7;
+
+    color:#166534;
+
+}
+
+.status.em-dia::before{
+
+    background:#22c55e;
+
+}
+
+/* =======================
+   Vencendo
+======================= */
+
+.status.vencendo{
+
+    background:#fef3c7;
+
+    color:#92400e;
+
+}
+
+.status.vencendo::before{
+
+    background:#f59e0b;
+
+}
+
+/* =======================
+   Vencido
+======================= */
+
+.status.vencido{
+
+    background:#fee2e2;
+
+    color:#991b1b;
+
+}
+
+.status.vencido::before{
+
+    background:#ef4444;
+
+}
+
+/* =======================
+   Botões de ação
+======================= */
+
+.acoes-ut{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.btn-acao{
+
+    width:42px;
+
+    height:42px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:10px;
+
+    background:#fff;
+
+    border:1px solid #ddd;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    padding:0;
+
+}
+
+.btn-acao svg{
+
+    width:20px !important;
+
+    height:20px !important;
+
+    display:block;
+
+}
+
+.btn-acao.editar{
+
+    color:#d75d00;
+
+    border-color:#d75d00;
+
+}
+
+.btn-acao.editar:hover{
+
+    background:#d75d00;
+
+    color:#fff;
+
+}
+
+.btn-acao.excluir{
+
+    color:#dc3545;
+
+    border-color:#dc3545;
+
+}
+
+.btn-acao.excluir:hover{
+
+    background:#dc3545;
+
+    color:#fff;
+
+}
+.contador-ut{
+    margin-top:12px;
+    text-align:center;
+    font-size:15px;
+    color:#777;
+    font-weight:500;
+}
+@media(max-width:1400px){
+
+    .acoes{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .campo-pesquisa{
+
+        width:100%;
+
+    }
+
+    .campo-pesquisa input{
+
+        max-width:100%;
+
+    }
+
+    .botoes{
+
+        width:100%;
+
+        justify-content:flex-end;
+
+    }
+
+}
+
+@media(max-width:900px){
+
+    .botoes{
+
+        display:grid;
+
+        grid-template-columns:1fr;
+
+    }
+
+    .atualizar,
+    .exportar,
+    .nova-ut{
+
+        width:100%;
+
+    }
+
+}
+.tabelaContainer{
+
+    width:100%;
+
+    overflow-x:auto;
+
+    overflow-y:hidden;
+
+    border-radius:16px;
+
+}
+
+.tabelaContainer table{
+
+    width:100%;
+
+    min-width:1300px;
+
+}

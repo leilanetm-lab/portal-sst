@@ -1,0 +1,83 @@
+.graficoTecnico{
+
+    background:#fff;
+
+    padding:30px;
+
+    border-radius:18px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+    margin-top:30px;
+
+}
+
+.graficoTecnico h2{
+
+    margin-bottom:25px;
+
+    color:#2d4059;
+
+}
+
+.cardsTecnicos{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+    margin-top:30px;
+
+}
+
+.cardTecnico{
+
+    background:#f8f9fb;
+
+    padding:22px;
+
+    border-radius:14px;
+
+    text-align:center;
+
+}
+
+.cardTecnico span{
+
+    display:block;
+
+    color:#777;
+
+    margin-bottom:10px;
+
+}
+
+.cardTecnico strong{
+
+    font-size:30px;
+
+    color:#ff6b00;
+
+}
+
+@media(max-width:1000px){
+
+.cardsTecnicos{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(max-width:700px){
+
+.cardsTecnicos{
+
+grid-template-columns:1fr;
+
+}
+
+}

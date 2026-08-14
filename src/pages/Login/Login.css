@@ -1,0 +1,255 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f6f9;
+}
+
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  width: 420px;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.logo {
+  width: 220px;
+  margin-bottom: 25px;
+}
+
+h1 {
+  color: #ff6600;
+  margin-bottom: 10px;
+}
+
+h3 {
+  color: #555;
+  font-weight: normal;
+  margin-bottom: 30px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 18px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  background: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #e65c00;
+}
+
+/* ============================
+   ESQUECI MINHA SENHA
+============================ */
+
+.btnEsqueciSenha {
+    margin-top: 12px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #23395d;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    padding: 5px;
+
+    width: 100%;
+}
+
+
+.btnEsqueciSenha:hover {
+    color: #ff6600;
+
+    text-decoration: underline;
+}
+
+
+.btnEsqueciSenha:disabled {
+    cursor: not-allowed;
+
+    opacity: .6;
+}
+
+
+/* ============================
+   MODAL ESQUECI SENHA
+============================ */
+
+.modalOverlay {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, .45);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 9999;
+}
+
+
+.modalEsqueciSenha {
+    width: 100%;
+
+    max-width: 430px;
+
+    background: #fff;
+
+    border-radius: 16px;
+
+    padding: 32px;
+
+    text-align: center;
+
+    box-shadow:
+        0 15px 45px rgba(0, 0, 0, .22);
+
+    animation:
+        aparecerModal .2s ease-out;
+}
+
+
+.iconeSenha {
+    font-size: 38px;
+
+    margin-bottom: 8px;
+}
+
+
+.modalEsqueciSenha h2 {
+    margin: 0 0 18px;
+
+    color: #23395d;
+
+    font-size: 23px;
+}
+
+
+.modalEsqueciSenha p {
+    margin: 10px 0;
+
+    color: #555;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+}
+
+
+.modalEsqueciSenha strong {
+    color: #ff6600;
+}
+
+
+.btnFecharModal {
+    margin-top: 18px;
+
+    border: none;
+
+    background: #ff6600;
+
+    color: #fff;
+
+    padding: 11px 28px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.btnFecharModal:hover {
+    background: #e65c00;
+
+    transform: translateY(-1px);
+}
+
+
+/* ============================
+   ANIMAÇÃO
+============================ */
+
+@keyframes aparecerModal {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-10px)
+            scale(.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* ============================
+   RESPONSIVO
+============================ */
+
+@media (max-width: 500px) {
+
+    .modalEsqueciSenha {
+
+        padding: 25px 20px;
+
+    }
+
+
+    .modalEsqueciSenha h2 {
+
+        font-size: 20px;
+
+    }
+
+}

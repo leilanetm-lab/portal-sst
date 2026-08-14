@@ -1,0 +1,420 @@
+.paginaBiblioteca{
+
+    padding:40px;
+
+}
+
+.paginaBiblioteca h1{
+
+    font-size:34px;
+
+    color:#ff6600;
+
+    margin-bottom:25px;
+
+    font-weight:700;
+
+}
+
+/* ============================
+   CARDS
+============================ */
+
+.cardsBiblioteca{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+.cardResumo{
+
+    background:#fff;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+}
+
+.cardResumo span{
+
+    color:#666;
+
+    font-size:15px;
+
+}
+
+.cardResumo strong{
+
+    margin-top:10px;
+
+    font-size:34px;
+
+    color:#23395d;
+
+}
+
+/* ============================
+   FILTROS
+============================ */
+
+.filtrosBiblioteca{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:15px;
+
+    margin-bottom:25px;
+
+}
+
+.filtrosBiblioteca input{
+
+    height:50px;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:10px;
+
+    padding:0 15px;
+
+    font-size:15px;
+
+    outline:none;
+
+    transition:.2s;
+
+    background:#fff;
+
+}
+
+.filtrosBiblioteca input:focus{
+
+    border-color:#ff6600;
+
+    box-shadow:0 0 8px rgba(255,102,0,.15);
+
+}
+
+/* ============================
+   TABELA
+============================ */
+
+.tabelaBiblioteca{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:#fff;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+.tabelaBiblioteca thead{
+
+    background:#23395d;
+
+    color:#fff;
+
+}
+
+.tabelaBiblioteca th{
+
+    padding:18px;
+
+    text-align:left;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.tabelaBiblioteca td{
+
+    padding:18px;
+
+    border-bottom:1px solid #ececec;
+
+    font-size:15px;
+
+    vertical-align:middle;
+
+}
+
+.tabelaBiblioteca tbody tr{
+
+    transition:.2s;
+
+}
+
+.tabelaBiblioteca tbody tr:hover{
+
+    background:#f7f9fc;
+
+}
+
+/* deixa o nome da UT ocupar mais espaço */
+
+.tabelaBiblioteca td:nth-child(2){
+
+    font-weight:600;
+
+    color:#23395d;
+
+}
+
+/* ============================
+   BOTÃO
+============================ */
+
+.btnAbrir{
+
+    border:none;
+
+    background:#ff6600;
+
+    color:#fff;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.2s;
+
+}
+
+.btnAbrir:hover{
+
+    background:#e65c00;
+
+    transform:translateY(-2px);
+
+}
+
+/* ============================
+   RESPONSIVO
+============================ */
+
+@media(max-width:1100px){
+
+    .cardsBiblioteca{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .filtrosBiblioteca{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .tabelaBiblioteca{
+
+        display:block;
+
+        overflow-x:auto;
+
+    }
+
+}
+
+/* ============================
+   CARD DA UNIDADE
+============================ */
+
+.cardUnidadeBiblioteca {
+    background: #fff;
+
+    border-radius: 15px;
+
+    padding: 25px 35px;
+
+    margin-bottom: 25px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+
+    text-align: center;
+}
+
+
+.cardUnidadeBiblioteca span {
+    display: block;
+
+    color: #666;
+
+    font-size: 15px;
+
+    margin-bottom: 12px;
+}
+
+
+.cardUnidadeBiblioteca strong {
+    display: block;
+
+    color: #ff6600;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+
+/* ============================
+   RESPONSIVO
+============================ */
+
+@media (max-width: 700px) {
+
+    .cardUnidadeBiblioteca {
+        padding: 20px;
+    }
+
+    .cardUnidadeBiblioteca strong {
+        font-size: 22px;
+    }
+
+}
+
+/* ============================
+   CABEÇALHO DA UNIDADE
+============================ */
+
+.cabecalhoUnidadeBiblioteca {
+    background: #fff;
+
+    border-radius: 15px;
+
+    padding: 22px 30px;
+
+    margin: 15px 0 30px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+
+    text-align: center;
+}
+
+
+.cabecalhoUnidadeBiblioteca span {
+    display: block;
+
+    color: #666;
+
+    font-size: 15px;
+
+    margin-bottom: 8px;
+}
+
+
+.cabecalhoUnidadeBiblioteca strong {
+    display: block;
+
+    color: #ff6600;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    line-height: 1.25;
+}
+
+
+.cabecalhoUnidadeBiblioteca small {
+    display: block;
+
+    margin-top: 8px;
+
+    color: #23395d;
+
+    font-size: 15px;
+
+    font-weight: 600;
+}
+
+
+@media (max-width: 700px) {
+
+    .cabecalhoUnidadeBiblioteca {
+        padding: 18px 20px;
+    }
+
+    .cabecalhoUnidadeBiblioteca strong {
+        font-size: 22px;
+    }
+
+}
+
+/* ============================
+   CARD DA UNIDADE - UT
+============================ */
+
+.cardResumo.cardUnidade {
+    min-height: 110px;
+    padding: 20px 25px;
+    text-align: center;
+    justify-content: center;
+}
+
+
+.cardResumo.cardUnidade span {
+    margin-top: 0;
+    margin-bottom: 8px;
+
+    font-size: 15px;
+    color: #666;
+}
+
+
+.cardResumo.cardUnidade strong {
+    margin-top: 0;
+
+    font-size: 28px;
+    line-height: 1.2;
+
+    color: #ff6600;
+
+    font-weight: 700;
+
+    word-break: normal;
+    overflow-wrap: break-word;
+}
+
+
+/* Telas menores */
+
+@media (max-width: 700px) {
+
+    .cardResumo.cardUnidade strong {
+        font-size: 22px;
+    }
+
+}

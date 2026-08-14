@@ -1,0 +1,101 @@
+.dashboardCards{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:25px;
+
+    margin-bottom:35px;
+
+}
+
+.cardDashboard{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:28px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+    transition:.25s;
+
+    border-top:5px solid #ff6b00;
+
+}
+
+.cardDashboard:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 15px 35px rgba(0,0,0,.12);
+
+}
+
+.cardTopo{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+}
+
+.icone{
+
+    font-size:34px;
+
+}
+
+.cardDashboard h3{
+
+    margin-top:10px;
+
+    color:#666;
+
+    font-size:18px;
+
+    font-weight:600;
+
+}
+
+.cardDashboard h1{
+
+    margin:15px 0 10px;
+
+    color:#ff6b00;
+
+    font-size:42px;
+
+    font-weight:700;
+
+}
+
+.cardDashboard p{
+
+    color:#888;
+
+    font-size:15px;
+
+}
+
+@media(max-width:1200px){
+
+    .dashboardCards{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:700px){
+
+    .dashboardCards{
+
+        grid-template-columns:1fr;
+
+    }
+
+}

@@ -1,0 +1,13 @@
+export const WORKFLOW_STEPS = {
+
+    SOLICITACAO: 1,
+
+    ANALISE_TECNICA: 2,
+
+    ELABORACAO_PGR: 3,
+
+    ELABORACAO_PCMSO: 4,
+
+    CONCLUIDO: 5
+
+};

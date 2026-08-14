@@ -1,0 +1,255 @@
+/* =========================================
+   PÁGINA DE CONFIGURAÇÕES
+========================================= */
+
+.configuracoesPagina {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 30px 32px 50px;
+}
+
+
+/* =========================================
+   CABEÇALHO
+========================================= */
+
+.configuracoesCabecalho {
+    margin-bottom: 28px;
+}
+
+.configuracoesCabecalho h1 {
+    margin: 0 0 8px;
+
+    color: #ff6900;
+
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.configuracoesCabecalho p {
+    margin: 0;
+
+    color: #334155;
+
+    font-size: 15px;
+}
+
+
+/* =========================================
+   GRID DOS CARDS
+========================================= */
+
+.configuracoesGrid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+
+    max-width: 1000px;
+}
+
+
+/* =========================================
+   CARD
+========================================= */
+
+.configuracaoCard {
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    min-height: 110px;
+
+    padding: 22px 20px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    border: 1px solid #edf0f4;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, 0.06);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.configuracaoCard:hover {
+    transform: translateY(-2px);
+
+    border-color: #ff6900;
+
+    box-shadow:
+        0 8px 24px rgba(15, 23, 42, 0.10);
+}
+
+
+/* =========================================
+   ÍCONE
+========================================= */
+
+.configuracaoIcone {
+    width: 54px;
+    height: 54px;
+
+    min-width: 54px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #fff1e8;
+
+    border-radius: 12px;
+
+    font-size: 28px;
+}
+
+
+/* =========================================
+   CONTEÚDO
+========================================= */
+
+.configuracaoConteudo {
+    flex: 1;
+}
+
+.configuracaoConteudo h2 {
+    margin: 0 0 6px;
+
+    color: #263b59;
+
+    font-size: 18px;
+
+    font-weight: 700;
+}
+
+.configuracaoConteudo p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   SETA
+========================================= */
+
+.configuracaoSeta {
+    color: #ff6900;
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    transition:
+        transform 0.2s ease;
+}
+
+.configuracaoCard:hover .configuracaoSeta {
+    transform: translateX(4px);
+}
+
+
+/* =========================================
+   AVISO DA UNIDADE
+========================================= */
+
+.configuracoesAviso {
+    max-width: 1000px;
+
+    margin-top: 24px;
+
+    padding: 18px 20px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 14px;
+
+    background: #fff7ed;
+
+    border-left: 4px solid #ff6900;
+
+    border-radius: 8px;
+}
+
+
+.configuracoesAvisoIcone {
+    font-size: 20px;
+
+    line-height: 1;
+}
+
+
+.configuracoesAviso strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #263b59;
+
+    font-size: 14px;
+}
+
+
+.configuracoesAviso p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   RESPONSIVO
+========================================= */
+
+@media (max-width: 900px) {
+
+    .configuracoesGrid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .configuracoesPagina {
+        padding: 20px 15px 40px;
+    }
+
+    .configuracoesCabecalho h1 {
+        font-size: 27px;
+    }
+
+    .configuracaoCard {
+        min-height: auto;
+
+        padding: 18px 16px;
+    }
+
+}

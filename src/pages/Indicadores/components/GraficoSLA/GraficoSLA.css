@@ -1,0 +1,93 @@
+.graficoSLA{
+
+    background:#fff;
+
+    padding:30px;
+
+    border-radius:18px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+    margin-top:30px;
+
+}
+
+.graficoSLA h2{
+
+    margin-bottom:25px;
+
+    color:#2d4059;
+
+}
+
+.slaCards{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:20px;
+
+    margin-top:30px;
+
+}
+
+.slaCard{
+
+    background:#f8f9fb;
+
+    border-radius:14px;
+
+    padding:22px;
+
+    text-align:center;
+
+}
+
+.slaCard h3{
+
+    margin:0 0 12px;
+
+    color:#2d4059;
+
+}
+
+.slaCard span{
+
+    display:block;
+
+    color:#888;
+
+    margin-bottom:8px;
+
+}
+
+.slaCard strong{
+
+    display:block;
+
+    font-size:30px;
+
+    color:#ff6b00;
+
+    margin-bottom:10px;
+
+}
+
+.slaCard small{
+
+    color:#666;
+
+    font-size:14px;
+
+}
+
+@media(max-width:1000px){
+
+    .slaCards{
+
+        grid-template-columns:1fr;
+
+    }
+
+}

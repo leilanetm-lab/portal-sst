@@ -1,0 +1,123 @@
+.uploadDocumento{
+
+    background:#fff;
+
+    border-radius:16px;
+
+    padding:30px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+
+    margin-top:25px;
+
+}
+
+.uploadDocumento h3{
+
+    margin-bottom:25px;
+
+    color:#17375E;
+
+    font-size:24px;
+
+    font-weight:700;
+
+}
+
+.uploadDocumento label{
+
+    display:block;
+
+    margin-top:18px;
+
+    margin-bottom:8px;
+
+    color:#444;
+
+    font-weight:600;
+
+    font-size:15px;
+
+}
+
+.uploadDocumento input,
+
+.uploadDocumento textarea{
+
+    width:100%;
+
+    padding:14px 16px;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+    transition:.2s;
+
+    box-sizing:border-box;
+
+    background:#fff;
+
+}
+
+.uploadDocumento input:focus,
+
+.uploadDocumento textarea:focus{
+
+    outline:none;
+
+    border-color:#17375E;
+
+    box-shadow:0 0 0 3px rgba(23,55,94,.12);
+
+}
+
+.uploadDocumento textarea{
+
+    resize:vertical;
+
+    min-height:120px;
+
+}
+
+.uploadDocumento button{
+
+    margin-top:30px;
+
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#f57c00;
+
+    color:#fff;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.uploadDocumento button:hover{
+
+    background:#e36f00;
+
+    transform:translateY(-2px);
+
+}
+
+.uploadDocumento button:active{
+
+    transform:scale(.98);
+
+}
