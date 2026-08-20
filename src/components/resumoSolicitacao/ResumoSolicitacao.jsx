@@ -2,6 +2,7 @@ import "./ResumoSolicitacao.css";
 import logoManserv from "../../assets/logo-manserv.png";
 import TimelineWorkflow from "../workflow/TimelineWorkflow";
 
+
 function ResumoSolicitacao({
 
     utSelecionada,
@@ -38,80 +39,177 @@ function ResumoSolicitacao({
 
     setEtapa,
 
-    onEnviar
+    onEnviar,
+
+    enviando
 
 }){
 
+
     const totalRiscos = funcoes.reduce(
-    (total, funcao) => total + funcao.riscos.length,
-    0
-);
 
-const riscosCompletos = funcoes.reduce(
-    (total, funcao) =>
-        total +
-        funcao.riscos.filter(item => item.valido).length,
-    0
-);
+        (total, funcao) =>
+            total + funcao.riscos.length,
 
-const nomesCampos = {
-    numeroUT: "Número da UT",
-    nomeUT: "Nome da Unidade",
-    cliente: "Cliente",
-    gerenteContrato: "Gerente do Contrato",
-    emailGerente: "E-mail do Gerente",
-    cidade: "Cidade",
-    endereco: "Endereço",
-    contrato: "Contrato",
-    vigenciaContrato: "Vigência do Contrato",
-    descricaoAlteracao: "Descrição das Alterações"
-};
+        0
 
-const alteracoesCadastro = Object.keys(dadosCadastro || {})
-    .filter((campo) => {
+    );
 
-        if (campo === "descricaoAlteracao") return false;
 
-        return (dadosCadastroOriginal?.[campo] ?? "") !==
-               (dadosCadastro?.[campo] ?? "");
+    const riscosCompletos = funcoes.reduce(
 
-    })
-    .map((campo) => ({
-        campo,
-        nome: nomesCampos[campo] || campo,
-        anterior: dadosCadastroOriginal?.[campo] || "-",
-        atual: dadosCadastro?.[campo] || "-"
-    }));
+        (total, funcao) =>
+
+            total +
+
+            funcao.riscos.filter(
+                item => item.valido
+            ).length,
+
+        0
+
+    );
+
+
+    const nomesCampos = {
+
+        numeroUT:
+            "Número da UT",
+
+        nomeUT:
+            "Nome da Unidade",
+
+        cliente:
+            "Cliente",
+
+        gerenteContrato:
+            "Gerente do Contrato",
+
+        emailGerente:
+            "E-mail do Gerente",
+
+        cidade:
+            "Cidade",
+
+        endereco:
+            "Endereço",
+
+        contrato:
+            "Contrato",
+
+        vigenciaContrato:
+            "Vigência do Contrato",
+
+        descricaoAlteracao:
+            "Descrição das Alterações"
+
+    };
+
+
+    const alteracoesCadastro =
+
+        Object.keys(
+            dadosCadastro || {}
+        )
+
+        .filter(
+            (campo) => {
+
+                if (
+                    campo ===
+                    "descricaoAlteracao"
+                ) {
+
+                    return false;
+
+                }
+
+
+                return (
+
+                    (
+                        dadosCadastroOriginal?.[
+                            campo
+                        ] ?? ""
+                    )
+
+                    !==
+
+                    (
+                        dadosCadastro?.[
+                            campo
+                        ] ?? ""
+                    )
+
+                );
+
+            }
+
+        )
+
+        .map(
+            (campo) => ({
+
+                campo,
+
+                nome:
+                    nomesCampos[campo] ||
+                    campo,
+
+                anterior:
+                    dadosCadastroOriginal?.[
+                        campo
+                    ] || "-",
+
+                atual:
+                    dadosCadastro?.[
+                        campo
+                    ] || "-"
+
+            })
+
+        );
+
 
     return(
 
-    <div className="ordemServico">
+        <div className="ordemServico">
+
 
             <header className="cabecalhoOS">
 
+
                 <div className="empresa">
 
-    <img
-        src={logoManserv}
-        alt="Manserv"
-        className="logoEmpresa"
-    />
 
-    <div>
+                    <img
 
-<h3>
+                        src={logoManserv}
 
-    Sistema Corporativo
+                        alt="Manserv"
 
-    <br/>
+                        className="logoEmpresa"
 
-    Segurança e Saúde do Trabalho
+                    />
 
-</h3>
 
-    </div>
+                    <div>
 
-</div>
+                        <h3>
+
+                            Sistema Corporativo
+
+                            <br/>
+
+                            Segurança e Saúde do Trabalho
+
+                        </h3>
+
+                    </div>
+
+
+                </div>
+
 
                 <div className="tituloOS">
 
@@ -121,6 +219,7 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                     </h2>
 
+
                     <small>
 
                         Resumo da Solicitação
@@ -129,9 +228,12 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                 </div>
 
+
             </header>
 
+
             <section className="barraInformacoes">
+
 
                 <div>
 
@@ -141,11 +243,18 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                     </span>
 
+
                     <strong>
-    {protocolo || "Será gerado após o envio"}
-</strong>
+
+                        {
+                            protocolo ||
+                            "Será gerado após o envio"
+                        }
+
+                    </strong>
 
                 </div>
+
 
                 <div>
 
@@ -155,11 +264,15 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                     </span>
 
+
                     <strong className="statusEmPreenchimento">
-    {statusSolicitacao}
-</strong>
+
+                        {statusSolicitacao}
+
+                    </strong>
 
                 </div>
+
 
                 <div>
 
@@ -168,6 +281,7 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
                         PRAZO ESTIMADO
 
                     </span>
+
 
                     <strong>
 
@@ -181,9 +295,12 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                 </div>
 
+
             </section>
 
+
             <section className="secaoResumo">
+
 
                 <div className="tituloSecao">
 
@@ -191,567 +308,1109 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                 </div>
 
+
                 <div className="fichaTecnica">
+
 
                     <div>
 
-    <span>
-
-        Gerente do Contrato
-
-    </span>
-
-    <strong>
-
-        {dadosCadastro?.gerenteContrato || "-"}
-
-    </strong>
-
-</div>
-
-<div>
-
-    <span>
-
-        🏢 Identificação da Unidade
-
-    </span>
-
-    <strong>
-
-    {utSelecionada?.numeroUT}
-
-    <br/>
-
-    <small>
-
-        {utSelecionada?.nomeUT}
-
-    </small>
-
-</strong>
-
-</div>
-
-<div>
-
-    <span>
-
-        E-mail do Gerente
-
-    </span>
-
-    <strong>
-
-        {dadosCadastro?.emailGerente || "-"}
-
-    </strong>
-
-</div>
-
-<div>
-
-    <span>
-
-        Data da Solicitação
-
-    </span>
-
-    <strong>
-
-        {new Date().toLocaleDateString("pt-BR")}
-
-    </strong>
-
-</div>
-
-                </div>
-
-            </section>
-{
-    alteracoesCadastro.length > 0 && (
-
-        <section className="secaoResumo">
-
-            <div className="tituloSecao">
-
-                📝 Alterações do Cadastro Administrativo
-
-            </div>
-
-            {
-                dadosCadastro.descricaoAlteracao && (
-
-                    <div
-                        className="campoGrande"
-                        style={{ marginBottom: 25 }}
-                    >
-
                         <span>
 
-                            Descrição das Alterações
+                            Gerente do Contrato
 
                         </span>
 
+
                         <strong>
 
-                            {dadosCadastro.descricaoAlteracao}
+                            {
+                                dadosCadastro?.gerenteContrato ||
+                                "-"
+                            }
 
                         </strong>
 
                     </div>
 
-                )
-            }
 
-            <div className="listaRiscosResumo">
+                    <div>
 
-                {
-                    alteracoesCadastro.map((item, index) => (
+                        <span>
 
-                        <div
-                            key={index}
-                            className="cardResumoRisco"
-                        >
+                            🏢 Identificação da Unidade
 
-                            <div className="cabecalhoResumoRisco">
+                        </span>
 
-                                <h3>{item.nome}</h3>
 
-                            </div>
+                        <strong>
 
-                            <div className="dadosResumoRisco">
+                            {utSelecionada?.numeroUT}
 
-                                <div>
+                            <br/>
 
-                                    <label>Valor anterior</label>
+                            <small>
 
-                                    <p>{item.anterior}</p>
+                                {utSelecionada?.nomeUT}
 
-                                </div>
+                            </small>
 
-                                <div>
+                        </strong>
 
-                                    <label>Novo valor</label>
+                    </div>
 
-                                    <p>{item.atual}</p>
 
-                                </div>
+                    <div>
 
-                            </div>
+                        <span>
+
+                            E-mail do Gerente
+
+                        </span>
+
+
+                        <strong>
+
+                            {
+                                dadosCadastro?.emailGerente ||
+                                "-"
+                            }
+
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+
+                            Data da Solicitação
+
+                        </span>
+
+
+                        <strong>
+
+                            {
+                                new Date()
+                                    .toLocaleDateString(
+                                        "pt-BR"
+                                    )
+                            }
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+            {
+                alteracoesCadastro.length > 0 && (
+
+                    <section className="secaoResumo">
+
+
+                        <div className="tituloSecao">
+
+                            📝 Alterações do Cadastro Administrativo
 
                         </div>
 
-                    ))
-                }
 
-            </div>
+                        {
+                            dadosCadastro?.descricaoAlteracao && (
 
-        </section>
+                                <div
 
-    )
-}
+                                    className="campoGrande"
+
+                                    style={{
+                                        marginBottom: 25
+                                    }}
+
+                                >
+
+                                    <span>
+
+                                        Descrição das Alterações
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {
+                                            dadosCadastro.descricaoAlteracao
+                                        }
+
+                                    </strong>
+
+                                </div>
+
+                            )
+                        }
+
+
+                        <div className="listaRiscosResumo">
+
+
+                            {
+
+                                alteracoesCadastro.map(
+
+                                    (item, index) => (
+
+                                        <div
+
+                                            key={index}
+
+                                            className="cardResumoRisco"
+
+                                        >
+
+
+                                            <div className="cabecalhoResumoRisco">
+
+                                                <h3>
+
+                                                    {item.nome}
+
+                                                </h3>
+
+                                            </div>
+
+
+                                            <div className="dadosResumoRisco">
+
+
+                                                <div>
+
+                                                    <label>
+
+                                                        Valor anterior
+
+                                                    </label>
+
+
+                                                    <p>
+
+                                                        {item.anterior}
+
+                                                    </p>
+
+                                                </div>
+
+
+                                                <div>
+
+                                                    <label>
+
+                                                        Novo valor
+
+                                                    </label>
+
+
+                                                    <p>
+
+                                                        {item.atual}
+
+                                                    </p>
+
+                                                </div>
+
+
+                                            </div>
+
+
+                                        </div>
+
+                                    )
+
+                                )
+
+                            }
+
+
+                        </div>
+
+
+                    </section>
+
+                )
+
+            }
+
 
             <section className="secaoResumo">
 
-    <div className="tituloSecao">
 
-        📄 Solicitação
+                <div className="tituloSecao">
 
-    </div>
+                    📄 Solicitação
 
-    <div className="fichaTecnica">
+                </div>
 
-        <div>
 
-            <span>
+                <div className="fichaTecnica">
 
-                Tipo da Solicitação
 
-            </span>
+                    <div>
 
-            <strong>
+                        <span>
 
-                {tipoSolicitacao || "-"}
+                            Tipo da Solicitação
 
-            </strong>
+                        </span>
 
-        </div>
 
-        <div>
+                        <strong>
 
-            <span>
+                            {
+                                tipoSolicitacao ||
+                                "-"
+                            }
 
-                Documentos Solicitados
+                        </strong>
 
-            </span>
+                    </div>
 
-            <strong>
 
-                {documentosGerados.length > 0
-                    ? documentosGerados.join(" / ")
-                    : "-"}
+                    <div>
 
-            </strong>
+                        <span>
 
-        </div>
+                            Documentos Solicitados
 
-        <div className="campoGrande">
+                        </span>
 
-            <span>
 
-                Motivo
+                        <strong>
 
-            </span>
+                            {
+                                documentosGerados.length > 0
 
-            <strong>
+                                    ?
 
-                {dadosSolicitacao?.motivo || "-"}
+                                    documentosGerados.join(
+                                        " / "
+                                    )
 
-            </strong>
+                                    :
 
-        </div>
+                                    "-"
+                            }
 
-        <div className="campoGrande">
+                        </strong>
 
-            <span>
+                    </div>
 
-                Justificativa da Solicitação
-
-            </span>
-
-            <strong>
-
-                {dadosSolicitacao?.descricao || "-"}
-
-            </strong>
-
-        </div>
-{
-    tipoSolicitacao === "Lançamento LTCAT" && (
-
-        <>
-
-            <div>
-
-                <span>
-
-                    Lançamento das medições
-
-                </span>
-
-                <strong>
-
-                    {
-                        lancamentoLTCAT?.tipoLancamento === "todos"
-                            ? "Todos os GHEs"
-                            : "GHEs específicos"
-                    }
-
-                </strong>
-
-            </div>
-
-            {
-
-                lancamentoLTCAT?.tipoLancamento === "especificos" && (
 
                     <div className="campoGrande">
 
                         <span>
 
-                            GHEs informados
+                            Motivo
 
                         </span>
 
+
                         <strong>
 
-    {
+                            {
+                                dadosSolicitacao?.motivo ||
+                                "-"
+                            }
 
-        lancamentoLTCAT?.ghes?.length > 0 ? (
-
-            lancamentoLTCAT.ghes.map((ghe, index) => (
-
-                <div key={index}>
-
-                    {ghe}
-
-                </div>
-
-            ))
-
-        ) : (
-
-            "-"
-
-        )
-
-    }
-
-</strong>
+                        </strong>
 
                     </div>
 
-                )
 
-            }
+                    <div className="campoGrande">
 
-        </>
+                        <span>
 
-    )
+                            Justificativa da Solicitação
 
-}
+                        </span>
 
-{
-    tipoSolicitacao === "Revisão Anual" &&
-    revisaoAnual?.possuiAlteracao === "nao" && (
 
-        <div>
+                        <strong>
 
-            <span>
+                            {
+                                dadosSolicitacao?.descricao ||
+                                "-"
+                            }
 
-                Revisão Anual
+                        </strong>
 
-            </span>
-
-            <strong>
-
-                Apenas atualização da vigência.
-
-            </strong>
-
-        </div>
-
-    )
-}
-
-{
-    (tipoSolicitacao === "Adequação" ||
-     tipoSolicitacao === "Correção") && (
-
-        <div className="resumoItem">
-
-            <strong>Tipo da alteração:</strong>
-
-            <span>
-
-                {adequacaoCorrecao.tipoAlteracao === "administrativo" && "Dados Administrativos"}
-
-                {adequacaoCorrecao.tipoAlteracao === "tecnica" && "Alteração Técnica"}
-
-                {adequacaoCorrecao.tipoAlteracao === "geral" && "Dados Gerais"}
-
-            </span>
-
-        </div>
-
-    )
-}
-
-{
-    adequacaoCorrecao?.tipoAlteracao === "geral" &&
-    adequacaoCorrecao?.descricao && (
-
-        <div className="resumoItem">
-
-            <strong>Descrição:</strong>
-
-            <span>
-
-                {adequacaoCorrecao.descricao}
-
-            </span>
-
-        </div>
-
-    )
-}
-
-    </div>
-
-</section>
-
- {
-    funcoes.map((funcao, index) => (
-
-        <section className="secaoResumo" key={index}>
-
-            <div className="tituloSecao">
-                👷 Função {index + 1}
-            </div>
-
-            <div className="fichaTecnica">
-
-                <div>
-                    <span>Função</span>
-                    <strong>{funcao.funcao}</strong>
-                </div>
-
-                <div>
-                    <span>Setor</span>
-                    <strong>{funcao.setor}</strong>
-                </div>
-
-                <div>
-                    <span>GHE</span>
-                    <strong>
-                        {
-                            funcao.tipoGHE === "novo"
-                                ? `Novo (${funcao.identificacaoGHE})`
-                                : funcao.identificacaoGHE
-                        }
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Colaborador</span>
-                    <strong>{funcao.colaborador}</strong>
-                </div>
-
-                <div className="campoGrande">
-                    <span>Descrição das Atividades</span>
-                    <strong>{funcao.descricaoAtividade}</strong>
-                </div>
-
-                <div className="campoGrande">
-                    <span>Local de Trabalho</span>
-                    <strong>{funcao.descricaoLocal}</strong>
-                </div>
-
-            </div>
-
-            <div className="tituloSecao" style={{ marginTop: 30 }}>
-                ☣ Inventário de Riscos
-            </div>
-
-            <div className="painelIndicadoresResumo">
-
-                <div className="indicadorResumo">
-                    <span>Total de riscos</span>
-                    <strong>{funcao.riscos.length}</strong>
-                </div>
-
-                <div className="indicadorResumo sucesso">
-                    <span>Completos</span>
-                    <strong>
-                        {funcao.riscos.filter(item => item.valido).length}
-                    </strong>
-                </div>
-
-                <div className="indicadorResumo alerta">
-                    <span>Pendentes</span>
-                    <strong>
-                        {
-                            funcao.riscos.length -
-                            funcao.riscos.filter(item => item.valido).length
-                        }
-                    </strong>
-                </div>
-
-            </div>
-
-            {
-                funcao.riscos.length === 0 ? (
-
-                    <div className="alertaCadastro">
-                        Nenhum risco cadastrado.
                     </div>
 
-                ) : (
 
-                    <div className="listaRiscosResumo">
+                    {
+                        tipoSolicitacao ===
+                        "Lançamento LTCAT"
 
-                        {
-                            funcao.riscos.map((item, indiceRisco) => (
+                        && (
 
-                                <div
-                                    key={indiceRisco}
-                                    className="cardResumoRisco"
-                                >
+                            <>
 
-                                    <div className="cabecalhoResumoRisco">
+                                <div>
 
-                                        <div>
+                                    <span>
 
-                                            <small>
-                                                RISCO {indiceRisco + 1}
-                                            </small>
+                                        Lançamento das medições
 
-                                            <h3>{item.risco}</h3>
+                                    </span>
 
-                                        </div>
 
-                                        <span className={`categoriaResumo ${item.categoria}`}>
-                                            {item.categoria}
-                                        </span>
-
-                                    </div>
-
-                                    <div className="dadosResumoRisco">
-
-                                        <div>
-                                            <label>Fonte Geradora</label>
-                                            <p>{item.atividade}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Forma de Exposição</label>
-                                            <p>{item.contato}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>EPI</label>
-                                            <p>{item.epi}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>CA</label>
-                                            <p>{item.ca}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>EPC</label>
-                                            <p>{item.epc || "Não informado"}</p>
-                                        </div>
-
-                                        <div className="linhaInteira">
-                                            <label>Controles Administrativos</label>
-                                            <p>{item.medidas}</p>
-                                        </div>
-
-                                    </div>
-
-                                    <div className="rodapeResumoRisco">
+                                    <strong>
 
                                         {
-                                            item.valido ? (
-                                                <span className="statusOk">
-                                                    ✔ Cadastro Completo
-                                                </span>
-                                            ) : (
-                                                <span className="statusPendente">
-                                                    ⚠ Cadastro Pendente
-                                                </span>
-                                            )
+                                            lancamentoLTCAT?.tipoLancamento ===
+                                            "todos"
+
+                                                ?
+
+                                                "Todos os GHEs"
+
+                                                :
+
+                                                "GHEs específicos"
                                         }
 
-                                    </div>
+                                    </strong>
 
                                 </div>
 
-                            ))
-                        }
 
-                    </div>
+                                {
+
+                                    lancamentoLTCAT?.tipoLancamento ===
+                                    "especificos"
+
+                                    && (
+
+                                        <div className="campoGrande">
+
+
+                                            <span>
+
+                                                GHEs informados
+
+                                            </span>
+
+
+                                            <strong>
+
+                                                {
+
+                                                    lancamentoLTCAT?.ghes?.length > 0
+
+                                                        ?
+
+                                                        lancamentoLTCAT.ghes.map(
+
+                                                            (ghe, index) => (
+
+                                                                <div
+                                                                    key={index}
+                                                                >
+
+                                                                    {ghe}
+
+                                                                </div>
+
+                                                            )
+
+                                                        )
+
+                                                        :
+
+                                                        "-"
+
+                                                }
+
+                                            </strong>
+
+
+                                        </div>
+
+                                    )
+
+                                }
+
+                            </>
+
+                        )
+
+                    }
+
+
+                    {
+
+                        tipoSolicitacao ===
+                        "Revisão Anual"
+
+                        &&
+
+                        revisaoAnual?.possuiAlteracao ===
+                        "nao"
+
+                        && (
+
+                            <div>
+
+                                <span>
+
+                                    Revisão Anual
+
+                                </span>
+
+
+                                <strong>
+
+                                    Apenas atualização da vigência.
+
+                                </strong>
+
+                            </div>
+
+                        )
+
+                    }
+
+
+                    {
+
+                        (
+
+                            tipoSolicitacao ===
+                            "Adequação"
+
+                            ||
+
+                            tipoSolicitacao ===
+                            "Correção"
+
+                        )
+
+                        && (
+
+                            <div className="resumoItem">
+
+                                <strong>
+
+                                    Tipo da alteração:
+
+                                </strong>
+
+
+                                <span>
+
+                                    {
+                                        adequacaoCorrecao.tipoAlteracao ===
+                                        "administrativo"
+
+                                        &&
+
+                                        "Dados Administrativos"
+                                    }
+
+
+                                    {
+                                        adequacaoCorrecao.tipoAlteracao ===
+                                        "tecnica"
+
+                                        &&
+
+                                        "Alteração Técnica"
+                                    }
+
+
+                                    {
+                                        adequacaoCorrecao.tipoAlteracao ===
+                                        "geral"
+
+                                        &&
+
+                                        "Dados Gerais"
+                                    }
+
+                                </span>
+
+                            </div>
+
+                        )
+
+                    }
+
+
+                    {
+
+                        adequacaoCorrecao?.tipoAlteracao ===
+                        "geral"
+
+                        &&
+
+                        adequacaoCorrecao?.descricao
+
+                        && (
+
+                            <div className="resumoItem">
+
+                                <strong>
+
+                                    Descrição:
+
+                                </strong>
+
+
+                                <span>
+
+                                    {
+                                        adequacaoCorrecao.descricao
+                                    }
+
+                                </span>
+
+                            </div>
+
+                        )
+
+                    }
+
+
+                </div>
+
+
+            </section>
+
+
+            {
+
+
+                funcoes.map(
+
+                    (funcao, index) => (
+
+                        <section
+
+                            className="secaoResumo"
+
+                            key={index}
+
+                        >
+
+
+                            <div className="tituloSecao">
+
+                                👷 Função {index + 1}
+
+                            </div>
+
+
+                            <div className="fichaTecnica">
+
+
+                                <div>
+
+                                    <span>
+
+                                        Função
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {funcao.funcao}
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+
+                                        Setor
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {funcao.setor}
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+
+                                        GHE
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {
+
+                                            funcao.tipoGHE ===
+                                            "novo"
+
+                                                ?
+
+                                                `Novo (${funcao.identificacaoGHE})`
+
+                                                :
+
+                                                funcao.identificacaoGHE
+
+                                        }
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+
+                                        Colaborador
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {funcao.colaborador}
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div className="campoGrande">
+
+                                    <span>
+
+                                        Descrição das Atividades
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {funcao.descricaoAtividade}
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div className="campoGrande">
+
+                                    <span>
+
+                                        Local de Trabalho
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {funcao.descricaoLocal}
+
+                                    </strong>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <div
+
+                                className="tituloSecao"
+
+                                style={{
+                                    marginTop: 30
+                                }}
+
+                            >
+
+                                ☣ Inventário de Riscos
+
+                            </div>
+
+
+                            <div className="painelIndicadoresResumo">
+
+
+                                <div className="indicadorResumo">
+
+                                    <span>
+
+                                        Total de riscos
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {funcao.riscos.length}
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div className="indicadorResumo sucesso">
+
+                                    <span>
+
+                                        Completos
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {
+                                            funcao.riscos.filter(
+                                                item =>
+                                                    item.valido
+                                            ).length
+                                        }
+
+                                    </strong>
+
+                                </div>
+
+
+                                <div className="indicadorResumo alerta">
+
+                                    <span>
+
+                                        Pendentes
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {
+
+                                            funcao.riscos.length -
+
+                                            funcao.riscos.filter(
+                                                item =>
+                                                    item.valido
+                                            ).length
+
+                                        }
+
+                                    </strong>
+
+                                </div>
+
+
+                            </div>
+
+
+                            {
+
+                                funcao.riscos.length ===
+                                0
+
+                                    ?
+
+                                    (
+
+                                        <div className="alertaCadastro">
+
+                                            Nenhum risco cadastrado.
+
+                                        </div>
+
+                                    )
+
+                                    :
+
+                                    (
+
+                                        <div className="listaRiscosResumo">
+
+
+                                            {
+
+                                                funcao.riscos.map(
+
+                                                    (
+                                                        item,
+                                                        indiceRisco
+                                                    ) => (
+
+                                                        <div
+
+                                                            key={
+                                                                indiceRisco
+                                                            }
+
+                                                            className="cardResumoRisco"
+
+                                                        >
+
+
+                                                            <div className="cabecalhoResumoRisco">
+
+
+                                                                <div>
+
+                                                                    <small>
+
+                                                                        RISCO{" "}
+                                                                        {
+                                                                            indiceRisco +
+                                                                            1
+                                                                        }
+
+                                                                    </small>
+
+
+                                                                    <h3>
+
+                                                                        {
+                                                                            item.risco
+                                                                        }
+
+                                                                    </h3>
+
+                                                                </div>
+
+
+                                                                <span
+
+                                                                    className={
+                                                                        `categoriaResumo ${item.categoria}`
+                                                                    }
+
+                                                                >
+
+                                                                    {
+                                                                        item.categoria
+                                                                    }
+
+                                                                </span>
+
+
+                                                            </div>
+
+
+                                                            <div className="dadosResumoRisco">
+
+
+                                                                <div>
+
+                                                                    <label>
+
+                                                                        Fonte Geradora
+
+                                                                    </label>
+
+
+                                                                    <p>
+
+                                                                        {
+                                                                            item.atividade
+                                                                        }
+
+                                                                    </p>
+
+                                                                </div>
+
+
+                                                                <div>
+
+                                                                    <label>
+
+                                                                        Forma de Exposição
+
+                                                                    </label>
+
+
+                                                                    <p>
+
+                                                                        {
+                                                                            item.contato
+                                                                        }
+
+                                                                    </p>
+
+                                                                </div>
+
+
+                                                                <div>
+
+                                                                    <label>
+
+                                                                        EPI
+
+                                                                    </label>
+
+
+                                                                    <p>
+
+                                                                        {
+                                                                            item.epi
+                                                                        }
+
+                                                                    </p>
+
+                                                                </div>
+
+
+                                                                <div>
+
+                                                                    <label>
+
+                                                                        CA
+
+                                                                    </label>
+
+
+                                                                    <p>
+
+                                                                        {
+                                                                            item.ca
+                                                                        }
+
+                                                                    </p>
+
+                                                                </div>
+
+
+                                                                <div>
+
+                                                                    <label>
+
+                                                                        EPC
+
+                                                                    </label>
+
+
+                                                                    <p>
+
+                                                                        {
+                                                                            item.epc ||
+                                                                            "Não informado"
+                                                                        }
+
+                                                                    </p>
+
+                                                                </div>
+
+
+                                                                <div className="linhaInteira">
+
+                                                                    <label>
+
+                                                                        Controles Administrativos
+
+                                                                    </label>
+
+
+                                                                    <p>
+
+                                                                        {
+                                                                            item.medidas
+                                                                        }
+
+                                                                    </p>
+
+                                                                </div>
+
+
+                                                            </div>
+
+
+                                                            <div className="rodapeResumoRisco">
+
+
+                                                                {
+
+                                                                    item.valido
+
+                                                                        ?
+
+                                                                        (
+
+                                                                            <span className="statusOk">
+
+                                                                                ✔ Cadastro Completo
+
+                                                                            </span>
+
+                                                                        )
+
+                                                                        :
+
+                                                                        (
+
+                                                                            <span className="statusPendente">
+
+                                                                                ⚠ Cadastro Pendente
+
+                                                                            </span>
+
+                                                                        )
+
+                                                                }
+
+
+                                                            </div>
+
+
+                                                        </div>
+
+                                                    )
+
+                                                )
+
+                                            }
+
+
+                                        </div>
+
+                                    )
+
+                            }
+
+
+                        </section>
+
+                    )
 
                 )
+
             }
 
-        </section>
 
-    ))
-}           
-                        <section className="secaoResumo">
+            <section className="secaoResumo">
+
 
                 <div className="tituloSecao">
 
@@ -759,7 +1418,9 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                 </div>
 
+
                 <div className="caixaDeclaracao">
+
 
                     <p>
 
@@ -767,7 +1428,9 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                     </p>
 
+
                     <div className="aceiteEletronico">
+
 
                         <div>
 
@@ -777,13 +1440,36 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                             </span>
 
+
                             <div>
-    <strong>UT {dadosCadastro?.numeroUT || "-"}</strong>
-    <br />
-    <span>{dadosCadastro?.cliente || "-"}</span>
-</div>
+
+                                <strong>
+
+                                    UT{" "}
+                                    {
+                                        dadosCadastro?.numeroUT ||
+                                        "-"
+                                    }
+
+                                </strong>
+
+
+                                <br/>
+
+
+                                <span>
+
+                                    {
+                                        dadosCadastro?.cliente ||
+                                        "-"
+                                    }
+
+                                </span>
+
+                            </div>
 
                         </div>
+
 
                         <div>
 
@@ -793,31 +1479,61 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                             </span>
 
+
                             <label className="checkboxAceite">
 
-    <input
-        type="checkbox"
-        checked={aceite}
-        onChange={(e) => setAceite(e.target.checked)}
-    />
 
-    Declaro que as informações prestadas representam as condições reais da unidade e autorizo o envio desta solicitação para análise da equipe de SST.
+                                <input
 
-</label>
+                                    type="checkbox"
+
+                                    checked={aceite}
+
+                                    onChange={(e) =>
+                                        setAceite(
+                                            e.target.checked
+                                        )
+                                    }
+
+                                    disabled={enviando}
+
+                                />
+
+
+                                Declaro que as informações prestadas representam as condições reais da unidade e autorizo o envio desta solicitação para análise da equipe de SST.
+
+
+                            </label>
+
 
                         </div>
 
+
                     </div>
+
 
                 </div>
 
+
             </section>
 
-<TimelineWorkflow
-    etapa={etapaWorkflow || 2}
-/>
+
+            <TimelineWorkflow
+
+                etapa={
+                    etapaWorkflow ||
+                    2
+                }
+
+            />
+
 
             <footer className="rodapeResumo">
+
+
+                {/* =====================================
+                    BOTÃO VOLTAR
+                ===================================== */}
 
                 <button
 
@@ -825,57 +1541,98 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                     className="cancelar"
 
+                    disabled={enviando}
+
                     onClick={() => {
 
-    if (tipoSolicitacao === "Lançamento LTCAT") {
 
-        setEtapa(5.5);
-        return;
+                        if (
+                            tipoSolicitacao ===
+                            "Lançamento LTCAT"
+                        ) {
 
-    }
+                            setEtapa(5.5);
 
-    if (tipoSolicitacao === "Revisão Anual") {
+                            return;
 
-        if (revisaoAnual?.possuiAlteracao === "nao") {
+                        }
 
-            setEtapa(5.6);
 
-        } else {
+                        if (
+                            tipoSolicitacao ===
+                            "Revisão Anual"
+                        ) {
 
-            setEtapa(5);
 
-        }
+                            if (
+                                revisaoAnual?.possuiAlteracao ===
+                                "nao"
+                            ) {
 
-        return;
+                                setEtapa(5.6);
 
-    }
+                            }
 
-    if (
-        (tipoSolicitacao === "Adequação" ||
-         tipoSolicitacao === "Correção")
-    ) {
+                            else {
 
-        if (adequacaoCorrecao?.tipoAlteracao === "administrativo") {
+                                setEtapa(5);
 
-            setEtapa(5.7);
+                            }
 
-        } else if (adequacaoCorrecao?.tipoAlteracao === "geral") {
 
-            setEtapa(5.8);
+                            return;
 
-        } else {
+                        }
 
-            setEtapa(5);
 
-        }
+                        if (
 
-        return;
+                            (
+                                tipoSolicitacao ===
+                                "Adequação"
 
-    }
+                                ||
 
-    setEtapa(5);
+                                tipoSolicitacao ===
+                                "Correção"
+                            )
 
-}}
+                        ) {
+
+
+                            if (
+                                adequacaoCorrecao?.tipoAlteracao ===
+                                "administrativo"
+                            ) {
+
+                                setEtapa(5.7);
+
+                            }
+
+                            else if (
+                                adequacaoCorrecao?.tipoAlteracao ===
+                                "geral"
+                            ) {
+
+                                setEtapa(5.8);
+
+                            }
+
+                            else {
+
+                                setEtapa(5);
+
+                            }
+
+
+                            return;
+
+                        }
+
+
+                        setEtapa(5);
+
+                    }}
 
                 >
 
@@ -883,50 +1640,105 @@ const alteracoesCadastro = Object.keys(dadosCadastro || {})
 
                 </button>
 
+
                 <div className="acoesResumo">
 
-                    <button
 
-    type="button"
-
-    className="secundario"
-
-    onClick={()=>window.print()}
-
->
-
-    👁 Visualizar OS
-
-</button>
+                    {/* =====================================
+                        VISUALIZAR OS
+                    ===================================== */}
 
                     <button
-    type="button"
-    className="salvar"
-    onClick={() => {
 
-        if (!aceite) {
+                        type="button"
 
-            alert("⚠️ Para enviar a solicitação é obrigatório confirmar o aceite da declaração.");
+                        className="secundario"
 
-            return;
+                        onClick={() =>
+                            window.print()
+                        }
 
-        }
+                    >
 
-        onEnviar();
+                        👁 Visualizar OS
 
-    }}
->
-    📨 Enviar Solicitação
-</button>
+                    </button>
+
+
+                    {/* =====================================
+                        ENVIAR SOLICITAÇÃO
+                    ===================================== */}
+
+                    {
+
+                        /*
+                        Só mostra o botão enquanto
+                        a solicitação ainda não foi enviada.
+
+                        Depois que o envio começa,
+                        "enviando" fica true.
+
+                        O botão desaparece.
+
+                        Se der erro, o onEnviar()
+                        libera novamente o botão.
+                        */
+
+                        !enviando
+
+                        &&
+
+                        statusSolicitacao !==
+                        "Em Análise Técnica"
+
+                        && (
+
+                            <button
+
+                                type="button"
+
+                                className="salvar"
+
+                                onClick={() => {
+
+
+                                    if (!aceite) {
+
+                                        alert(
+                                            "⚠️ Para enviar a solicitação é obrigatório confirmar o aceite da declaração."
+                                        );
+
+                                        return;
+
+                                    }
+
+
+                                    onEnviar();
+
+                                }}
+
+                            >
+
+                                📨 Enviar Solicitação
+
+                            </button>
+
+                        )
+
+                    }
+
 
                 </div>
 
+
             </footer>
+
 
         </div>
 
     );
 
 }
+
 
 export default ResumoSolicitacao;

@@ -1,69 +1,122 @@
 import { useState } from "react";
 
-import "./Solicitacoes.css";
+import "./NovaSolicitacao.css";
 
-import SelecaoUT from "./sections/SelecaoUT";
-import AlteracaoCadastro from "./sections/AlteracaoCadastro";
-import TipoSolicitacao from "./sections/TipoSolicitacao";
-import DadosSolicitacao from "./sections/DadosSolicitacao";
-import DadosFuncao from "./sections/DadosFuncao";
-import CadastroRiscos from "./sections/CadastroRiscos";
-import LancamentoLTCAT from "./sections/LancamentoLTCAT";
-import RevisaoAnual from "./sections/RevisaoAnual";
-import AdequacaoCorrecao from "./sections/AdequacaoCorrecao";
-import DadosGerais from "./sections/DadosGerais";
-import ResumoSolicitacao from "../../components/resumoSolicitacao/ResumoSolicitacao";
+import SelecaoUT from "../sections/SelecaoUT";
+import AlteracaoCadastro from "../sections/AlteracaoCadastro";
+import TipoSolicitacao from "../sections/TipoSolicitacao";
+import DadosSolicitacao from "../sections/DadosSolicitacao";
+import DadosFuncao from "../sections/DadosFuncao";
+import CadastroRiscos from "../sections/CadastroRiscos";
+import LancamentoLTCAT from "../sections/LancamentoLTCAT";
+import RevisaoAnual from "../sections/RevisaoAnual";
+import AdequacaoCorrecao from "../sections/AdequacaoCorrecao";
+import DadosGerais from "../sections/DadosGerais";
+
+import ResumoSolicitacao
+    from "../../../components/resumoSolicitacao/ResumoSolicitacao";
+
 import {
     collection,
     addDoc,
     serverTimestamp,
     doc,
+    getDoc,
     runTransaction
 } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig";
+
+import {
+    auth,
+    db
+} from "../../../firebase/firebaseConfig";
+
+import {
+    notificarAdministradores
+} from "../../../services/notificacoesService";
+
 
 function Solicitacoes() {
+
 
     // =====================================
     // CONTROLE DAS ETAPAS
     // =====================================
 
-    const [etapa, setEtapa] = useState(1);
+    const [
+        etapa,
+        setEtapa
+    ] = useState(1);
+
 
     // =====================================
     // UNIDADE
     // =====================================
 
-    const [utSelecionada, setUtSelecionada] = useState(null);
+    const [
+        utSelecionada,
+        setUtSelecionada
+    ] = useState(null);
 
-    const [cadastroAdministrativo, setCadastroAdministrativo] = useState(null);
 
-    const [houveAlteracaoCadastro, setHouveAlteracaoCadastro] = useState("");
+    const [
+        cadastroAdministrativo,
+        setCadastroAdministrativo
+    ] = useState(null);
 
-    const [dadosCadastroOriginal, setDadosCadastroOriginal] = useState({});
-    
-    const [dadosCadastro, setDadosCadastro] = useState({});
+
+    const [
+        houveAlteracaoCadastro,
+        setHouveAlteracaoCadastro
+    ] = useState("");
+
+
+    const [
+        dadosCadastroOriginal,
+        setDadosCadastroOriginal
+    ] = useState({});
+
+
+    const [
+        dadosCadastro,
+        setDadosCadastro
+    ] = useState({});
+
 
     // =====================================
     // TIPO DA SOLICITAÇÃO
     // =====================================
 
-    const [tipoSolicitacao, setTipoSolicitacao] = useState("");
+    const [
+        tipoSolicitacao,
+        setTipoSolicitacao
+    ] = useState("");
 
-    const [documentosGerados, setDocumentosGerados] = useState([]);
+
+    const [
+        documentosGerados,
+        setDocumentosGerados
+    ] = useState([]);
+
 
     // =====================================
     // DADOS DA SOLICITAÇÃO
     // =====================================
 
-    const [dadosSolicitacao, setDadosSolicitacao] = useState({});
+    const [
+        dadosSolicitacao,
+        setDadosSolicitacao
+    ] = useState({});
+
 
     // =====================================
     // DADOS DA FUNÇÃO
     // =====================================
 
-    const [dadosFuncao, setDadosFuncao] = useState({
-    
+    const [
+        dadosFuncao,
+        setDadosFuncao
+    ] = useState({
+
         colaborador: "",
 
         emContratacao: false,
@@ -84,149 +137,622 @@ function Solicitacoes() {
 
     });
 
-const [funcoes, setFuncoes] = useState([]);
-const [protocolo, setProtocolo] = useState("");
-const [statusSolicitacao, setStatusSolicitacao] = useState("Em preenchimento");
-const [aceite, setAceite] = useState(false);
-const [revisaoAnual, setRevisaoAnual] = useState({
 
-    possuiAlteracao: ""
+    const [
+        funcoes,
+        setFuncoes
+    ] = useState([]);
 
-});
-const [lancamentoLTCAT, setLancamentoLTCAT] = useState({
-    tipoLancamento: "",
-    gheAtual: "",
-    ghes: []
-});
-const [adequacaoCorrecao, setAdequacaoCorrecao] = useState({
 
-    tipoAlteracao: "",
+    const [
+        protocolo,
+        setProtocolo
+    ] = useState("");
 
-    descricao: ""
 
-});
+    const [
+        statusSolicitacao,
+        setStatusSolicitacao
+    ] = useState(
+        "Em preenchimento"
+    );
 
-// =====================================
-// ENVIO DA SOLICITAÇÃO
-// =====================================
 
-const onEnviar = async () => {
+    const [
+        aceite,
+        setAceite
+    ] = useState(false);
 
-    try {
 
-        const contadorRef = doc(db, "Contadores", "protocolos");
+    // =====================================
+    // CONTROLE DO ENVIO
+    // Impede duplo clique / duplo envio
+    // =====================================
 
-const protocolo = await runTransaction(db, async (transaction) => {
+    const [
+        enviando,
+        setEnviando
+    ] = useState(false);
 
-    const contadorDoc = await transaction.get(contadorRef);
 
-    const ultimoNumero = contadorDoc.data().ultimoNumero || 0;
+    const [
+        revisaoAnual,
+        setRevisaoAnual
+    ] = useState({
 
-    const proximoNumero = ultimoNumero + 1;
-
-    transaction.update(contadorRef, {
-
-        ultimoNumero: proximoNumero
+        possuiAlteracao: ""
 
     });
 
-    return `OS-${new Date().getFullYear()}-${String(proximoNumero).padStart(6, "0")}`;
 
-});
+    const [
+        lancamentoLTCAT,
+        setLancamentoLTCAT
+    ] = useState({
 
-await addDoc(collection(db, "Solicitacoes"), {
+        tipoLancamento: "",
 
-    protocolo,
+        gheAtual: "",
 
-    // Controle
-    status: "Em Análise Técnica",
-    criadoEm: serverTimestamp(),
-    aceite,
-    aceiteEm: serverTimestamp(),
+        ghes: []
 
-    // Unidade
-    ut: dadosCadastro.numeroUT || "",
-    cliente: dadosCadastro.cliente || "",
-    cidade: dadosCadastro.cidade || "",
-    gerenteContrato: dadosCadastro.gerenteContrato || "",
-    emailGerente: dadosCadastro.emailGerente || "",
+    });
 
-    // Solicitação
-    tipoSolicitacao,
-    documentosGerados,
 
-    // Dados da Solicitação
-dadosSolicitacao,
+    const [
+        adequacaoCorrecao,
+        setAdequacaoCorrecao
+    ] = useState({
 
-// Lançamento de LTCAT
-lancamentoLTCAT,
-tipoLancamentoLTCAT:
+        tipoAlteracao: "",
 
-    lancamentoLTCAT.tipoLancamento === "todos"
+        descricao: ""
 
-        ? "Todos os GHEs"
+    });
 
-        : "GHEs específicos",
 
-// Revisão Anual
-revisaoAnual,
+    // =====================================
+    // ENVIO DA SOLICITAÇÃO
+    // =====================================
 
-tipoRevisao:
+    const onEnviar = async () => {
 
-    revisaoAnual.possuiAlteracao === "nao"
 
-        ? "Apenas atualização da vigência"
+        // =====================================
+        // BLOQUEAR DUPLO ENVIO
+        // =====================================
 
-        : revisaoAnual.possuiAlteracao === "sim"
+        if (enviando) {
 
-            ? "Alteração técnica"
+            return;
 
-            : "",
+        }
 
-// Adequação / Correção
-adequacaoCorrecao,
-tipoAlteracao:
 
-    adequacaoCorrecao.tipoAlteracao === "administrativo"
+        // Ativa o bloqueio imediatamente
+        setEnviando(true);
 
-        ? "Dados Administrativos"
 
-        : adequacaoCorrecao.tipoAlteracao === "tecnica"
+        try {
 
-            ? "Alteração Técnica"
 
-            : adequacaoCorrecao.tipoAlteracao === "geral"
+            // =====================================
+            // USUÁRIO LOGADO
+            // =====================================
 
-                ? "Dados Gerais"
+            const usuarioLogado =
+                auth.currentUser;
 
-                : "",
 
-// Funções
-funcoes,
+            if (!usuarioLogado) {
 
-    // Cadastro Administrativo
-    dadosCadastro
+                alert(
+                    "Usuário não autenticado."
+                );
 
-});
+                setEnviando(false);
 
-setProtocolo(protocolo);
+                return;
 
-setStatusSolicitacao("Em Análise Técnica");
+            }
 
-    alert("Solicitação enviada com sucesso!");
 
-    } catch (erro) {
+            console.log(
+                "Usuário que está criando a solicitação:",
+                usuarioLogado.uid
+            );
 
-        console.error(erro);
 
-        alert("Erro ao enviar a solicitação.");
+            // =====================================
+            // BUSCAR PERFIL DO USUÁRIO
+            // =====================================
 
-    }
+            const usuarioRef =
+                doc(
+                    db,
+                    "Usuarios",
+                    usuarioLogado.uid
+                );
 
-};
-        return(
+
+            const usuarioDoc =
+                await getDoc(
+                    usuarioRef
+                );
+
+
+            if (
+                !usuarioDoc.exists()
+            ) {
+
+                alert(
+                    "Cadastro do usuário não encontrado."
+                );
+
+                setEnviando(false);
+
+                return;
+
+            }
+
+
+            const dadosUsuario =
+                usuarioDoc.data();
+
+
+            console.log(
+                "Perfil do usuário:",
+                dadosUsuario
+            );
+
+
+            // =====================================
+            // GERAR PROTOCOLO
+            // =====================================
+
+            const contadorRef =
+                doc(
+                    db,
+                    "Contadores",
+                    "protocolos"
+                );
+
+
+            const protocoloGerado =
+                await runTransaction(
+
+                    db,
+
+                    async (
+                        transaction
+                    ) => {
+
+
+                        const contadorDoc =
+                            await transaction.get(
+                                contadorRef
+                            );
+
+
+                        const ultimoNumero =
+                            contadorDoc.exists()
+
+                                ?
+
+                                (
+                                    contadorDoc.data()
+                                        .ultimoNumero || 0
+                                )
+
+                                :
+
+                                0;
+
+
+                        const proximoNumero =
+                            ultimoNumero + 1;
+
+
+                        /*
+                        =====================================
+                        SE O CONTADOR EXISTIR,
+                        ATUALIZA.
+
+                        SE NÃO EXISTIR,
+                        CRIA.
+                        =====================================
+                        */
+
+                        transaction.set(
+
+                            contadorRef,
+
+                            {
+
+                                ultimoNumero:
+                                    proximoNumero
+
+                            },
+
+                            {
+
+                                merge: true
+
+                            }
+
+                        );
+
+
+                        return (
+
+                            `OS-${new Date().getFullYear()}-${String(
+                                proximoNumero
+                            ).padStart(
+                                6,
+                                "0"
+                            )}`
+
+                        );
+
+                    }
+
+                );
+
+
+            console.log(
+                "Protocolo gerado:",
+                protocoloGerado
+            );
+
+
+            // =====================================
+            // SALVAR SOLICITAÇÃO
+            // =====================================
+
+            const solicitacaoRef =
+                await addDoc(
+
+                    collection(
+                        db,
+                        "Solicitacoes"
+                    ),
+
+                    {
+
+
+                        // =====================================
+                        // PROTOCOLO
+                        // =====================================
+
+                        protocolo:
+                            protocoloGerado,
+
+
+                        // =====================================
+                        // CONTROLE
+                        // =====================================
+
+                        status:
+                            "Em Análise Técnica",
+
+                        etapaWorkflow:
+                            2,
+
+                        criadoEm:
+                            serverTimestamp(),
+
+
+                        // =====================================
+                        // USUÁRIO QUE CRIOU
+                        // =====================================
+
+                        criadoPorUid:
+                            usuarioLogado.uid,
+
+                        criadoPorEmail:
+                            usuarioLogado.email || "",
+
+                        criadoPorNome:
+
+                            dadosUsuario.nomeUT ||
+
+                            dadosUsuario.nome ||
+
+                            "Usuário",
+
+
+                        // =====================================
+                        // ACEITE
+                        // =====================================
+
+                        aceite,
+
+                        aceiteEm:
+                            serverTimestamp(),
+
+
+                        // =====================================
+                        // UNIDADE
+                        // =====================================
+
+                        ut:
+                            dadosCadastro.numeroUT ||
+                            "",
+
+                        cliente:
+                            dadosCadastro.cliente ||
+                            "",
+
+                        cidade:
+                            dadosCadastro.cidade ||
+                            "",
+
+                        gerenteContrato:
+                            dadosCadastro.gerenteContrato ||
+                            "",
+
+                        emailGerente:
+                            dadosCadastro.emailGerente ||
+                            "",
+
+
+                        // =====================================
+                        // SOLICITAÇÃO
+                        // =====================================
+
+                        tipoSolicitacao,
+
+                        documentosGerados,
+
+
+                        // =====================================
+                        // DADOS DA SOLICITAÇÃO
+                        // =====================================
+
+                        dadosSolicitacao,
+
+
+                        // =====================================
+                        // LANÇAMENTO LTCAT
+                        // =====================================
+
+                        lancamentoLTCAT,
+
+                        tipoLancamentoLTCAT:
+
+                            lancamentoLTCAT.tipoLancamento ===
+                            "todos"
+
+                                ?
+
+                                "Todos os GHEs"
+
+                                :
+
+                                "GHEs específicos",
+
+
+                        // =====================================
+                        // REVISÃO ANUAL
+                        // =====================================
+
+                        revisaoAnual,
+
+                        tipoRevisao:
+
+                            revisaoAnual.possuiAlteracao ===
+                            "nao"
+
+                                ?
+
+                                "Apenas atualização da vigência"
+
+                                :
+
+                                revisaoAnual.possuiAlteracao ===
+                                "sim"
+
+                                    ?
+
+                                    "Alteração técnica"
+
+                                    :
+
+                                    "",
+
+
+                        // =====================================
+                        // ADEQUAÇÃO / CORREÇÃO
+                        // =====================================
+
+                        adequacaoCorrecao,
+
+                        tipoAlteracao:
+
+                            adequacaoCorrecao.tipoAlteracao ===
+                            "administrativo"
+
+                                ?
+
+                                "Dados Administrativos"
+
+                                :
+
+                                adequacaoCorrecao.tipoAlteracao ===
+                                "tecnica"
+
+                                    ?
+
+                                    "Alteração Técnica"
+
+                                    :
+
+                                    adequacaoCorrecao.tipoAlteracao ===
+                                    "geral"
+
+                                        ?
+
+                                        "Dados Gerais"
+
+                                        :
+
+                                        "",
+
+
+                        // =====================================
+                        // FUNÇÕES
+                        // =====================================
+
+                        funcoes,
+
+
+                        // =====================================
+                        // CADASTRO ADMINISTRATIVO
+                        // =====================================
+
+                        dadosCadastro
+
+                    }
+
+                );
+
+
+            console.log(
+                "Solicitação salva:",
+                solicitacaoRef.id
+            );
+
+
+            // =====================================
+            // NOTIFICAR ADMINISTRADORES
+            // =====================================
+
+            if (
+                dadosUsuario.perfil ===
+                "UT"
+            ) {
+
+
+                const nomeUnidade =
+
+                    dadosUsuario.nomeUT ||
+
+                    dadosUsuario.nome ||
+
+                    dadosCadastro.nomeUT ||
+
+                    dadosCadastro.numeroUT ||
+
+                    "A Unidade";
+
+
+                console.log(
+                    "Enviando notificação aos administradores..."
+                );
+
+
+                await notificarAdministradores({
+
+                    solicitacaoId:
+                        solicitacaoRef.id,
+
+                    protocolo:
+                        protocoloGerado,
+
+                    titulo:
+                        "Nova solicitação recebida",
+
+                    mensagem:
+
+                        `${nomeUnidade} abriu a solicitação ${protocoloGerado}.`,
+
+                    tipo:
+                        "solicitacao"
+
+                });
+
+
+                console.log(
+                    "Administradores notificados."
+                );
+
+            }
+
+
+            // =====================================
+            // ATUALIZAR TELA
+            // =====================================
+
+            setProtocolo(
+                protocoloGerado
+            );
+
+
+            setStatusSolicitacao(
+                "Em Análise Técnica"
+            );
+
+
+            // =====================================
+            // SUCESSO
+            // =====================================
+
+            alert(
+                "Solicitação enviada com sucesso!"
+            );
+
+
+            /*
+            IMPORTANTE:
+
+            NÃO liberamos o botão novamente aqui.
+
+            O estado "enviando" permanece true.
+            Além disso, o status passou para
+            "Em Análise Técnica", então o botão
+            também deverá desaparecer no ResumoSolicitacao.
+            */
+
+
+        }
+
+        catch (erro) {
+
+
+            console.error(
+                "Erro ao enviar a solicitação:",
+                erro
+            );
+
+
+            alert(
+                "Erro ao enviar a solicitação."
+            );
+
+
+            // =====================================
+            // LIBERAR NOVAMENTE SOMENTE SE DER ERRO
+            // =====================================
+
+            setEnviando(false);
+
+        }
+
+    };
+
+
+    // =====================================
+    // TELA
+    // =====================================
+
+    return (
 
         <div className="solicitacoes">
+
+
+            {/* =====================================
+                CABEÇALHO
+            ===================================== */}
 
             <div className="cabecalho">
 
@@ -236,13 +762,17 @@ setStatusSolicitacao("Em Análise Técnica");
 
                 </h1>
 
+
                 <p>
 
-                    Preencha as informações abaixo para solicitar atualização dos documentos legais da unidade.
+                    Preencha as informações abaixo
+                    para solicitar atualização dos
+                    documentos legais da unidade.
 
                 </p>
 
             </div>
+
 
             {/* ==========================
                 ETAPA 1
@@ -250,43 +780,72 @@ setStatusSolicitacao("Em Análise Técnica");
 
             {
 
-                etapa===1 && (
+                etapa === 1 && (
 
                     <>
 
                         <SelecaoUT
 
-    utSelecionada={utSelecionada}
+                            utSelecionada={
+                                utSelecionada
+                            }
 
-    setUtSelecionada={setUtSelecionada}
+                            setUtSelecionada={
+                                setUtSelecionada
+                            }
 
-    cadastroAdministrativo={cadastroAdministrativo}
+                            cadastroAdministrativo={
+                                cadastroAdministrativo
+                            }
 
-    setCadastroAdministrativo={setCadastroAdministrativo}
+                            setCadastroAdministrativo={
+                                setCadastroAdministrativo
+                            }
 
-    dadosCadastro={dadosCadastro}
+                            dadosCadastro={
+                                dadosCadastro
+                            }
 
-    setDadosCadastro={setDadosCadastro}
+                            setDadosCadastro={
+                                setDadosCadastro
+                            }
 
-    setDadosCadastroOriginal={setDadosCadastroOriginal}
+                            setDadosCadastroOriginal={
+                                setDadosCadastroOriginal
+                            }
 
- />
+                        />
+
 
                         <AlteracaoCadastro
 
-                            utSelecionada={utSelecionada}
+                            utSelecionada={
+                                utSelecionada
+                            }
 
-                            cadastroAdministrativo={cadastroAdministrativo}
+                            cadastroAdministrativo={
+                                cadastroAdministrativo
+                            }
 
-                            houveAlteracaoCadastro={houveAlteracaoCadastro}
+                            houveAlteracaoCadastro={
+                                houveAlteracaoCadastro
+                            }
 
-                            setHouveAlteracaoCadastro={setHouveAlteracaoCadastro}
+                            setHouveAlteracaoCadastro={
+                                setHouveAlteracaoCadastro
+                            }
 
-                            dadosCadastro={dadosCadastro}
+                            dadosCadastro={
+                                dadosCadastro
+                            }
 
-                            setDadosCadastro={setDadosCadastro}
+                            setDadosCadastro={
+                                setDadosCadastro
+                            }
 
-                            setEtapa={setEtapa}
+                            setEtapa={
+                                setEtapa
+                            }
 
                         />
 
@@ -296,31 +855,43 @@ setStatusSolicitacao("Em Análise Técnica");
 
             }
 
+
             {/* ==========================
                 ETAPA 2
             ========================== */}
 
             {
 
-                etapa===2 && (
+                etapa === 2 && (
 
                     <TipoSolicitacao
 
-                        tipoSolicitacao={tipoSolicitacao}
+                        tipoSolicitacao={
+                            tipoSolicitacao
+                        }
 
-                        setTipoSolicitacao={setTipoSolicitacao}
+                        setTipoSolicitacao={
+                            setTipoSolicitacao
+                        }
 
-                        documentosGerados={documentosGerados}
+                        documentosGerados={
+                            documentosGerados
+                        }
 
-                        setDocumentosGerados={setDocumentosGerados}
+                        setDocumentosGerados={
+                            setDocumentosGerados
+                        }
 
-                        setEtapa={setEtapa}
+                        setEtapa={
+                            setEtapa
+                        }
 
                     />
 
                 )
 
             }
+
 
             {/* ==========================
                 ETAPA 3
@@ -328,47 +899,87 @@ setStatusSolicitacao("Em Análise Técnica");
 
             {
 
-                etapa===3 && (
+                etapa === 3 && (
 
                     <DadosSolicitacao
 
-                        tipoSolicitacao={tipoSolicitacao}
+                        tipoSolicitacao={
+                            tipoSolicitacao
+                        }
 
-                        dadosSolicitacao={dadosSolicitacao}
+                        dadosSolicitacao={
+                            dadosSolicitacao
+                        }
 
-                        setDadosSolicitacao={setDadosSolicitacao}
+                        setDadosSolicitacao={
+                            setDadosSolicitacao
+                        }
 
-                        setEtapa={setEtapa}
+                        setEtapa={
+                            setEtapa
+                        }
 
                     />
 
                 )
 
             }
-                        {/* ==========================
+
+
+            {/* ==========================
                 ETAPA 4
             ========================== */}
 
             {
 
-                etapa===4 && (
+                etapa === 4 && (
 
                     <DadosFuncao
-    dadosFuncao={dadosFuncao}
-    setDadosFuncao={setDadosFuncao}
-    setEtapa={setEtapa}
-    permitirNovoGHE={
-        !(
-            (tipoSolicitacao === "Adequação" ||
-             tipoSolicitacao === "Correção") &&
-            adequacaoCorrecao?.tipoAlteracao === "tecnica"
-        )
-    }
-/>
+
+                        dadosFuncao={
+                            dadosFuncao
+                        }
+
+                        setDadosFuncao={
+                            setDadosFuncao
+                        }
+
+                        setEtapa={
+                            setEtapa
+                        }
+
+                        permitirNovoGHE={
+
+                            !(
+
+                                (
+
+                                    tipoSolicitacao ===
+                                    "Adequação"
+
+                                    ||
+
+                                    tipoSolicitacao ===
+                                    "Correção"
+
+                                )
+
+                                &&
+
+                                adequacaoCorrecao
+                                    ?.tipoAlteracao ===
+                                "tecnica"
+
+                            )
+
+                        }
+
+                    />
 
                 )
 
             }
+
 
             {/* ==========================
                 ETAPA 5
@@ -376,147 +987,247 @@ setStatusSolicitacao("Em Análise Técnica");
 
             {
 
-                etapa===5 && (
+                etapa === 5 && (
 
                     <CadastroRiscos
 
-    dadosFuncao={dadosFuncao}
+                        dadosFuncao={
+                            dadosFuncao
+                        }
 
-    setDadosFuncao={setDadosFuncao}
+                        setDadosFuncao={
+                            setDadosFuncao
+                        }
 
-    funcoes={funcoes}
+                        funcoes={
+                            funcoes
+                        }
 
-    setFuncoes={setFuncoes}
+                        setFuncoes={
+                            setFuncoes
+                        }
 
-    setEtapa={setEtapa}
+                        setEtapa={
+                            setEtapa
+                        }
 
-/>
+                    />
 
                 )
 
             }
-{/* ==========================
-    ETAPA LTCAT
-========================== */}
 
-{
-    etapa === 5.5 && (
 
-        <LancamentoLTCAT
+            {/* ==========================
+                ETAPA LTCAT
+            ========================== */}
 
-            lancamentoLTCAT={lancamentoLTCAT}
+            {
 
-            setLancamentoLTCAT={setLancamentoLTCAT}
+                etapa === 5.5 && (
 
-            setEtapa={setEtapa}
+                    <LancamentoLTCAT
 
-        />
+                        lancamentoLTCAT={
+                            lancamentoLTCAT
+                        }
 
-    )
+                        setLancamentoLTCAT={
+                            setLancamentoLTCAT
+                        }
 
-}
-{
-    etapa === 5.6 && (
+                        setEtapa={
+                            setEtapa
+                        }
 
-        <RevisaoAnual
+                    />
 
-            revisaoAnual={revisaoAnual}
+                )
 
-            setRevisaoAnual={setRevisaoAnual}
+            }
 
-            setEtapa={setEtapa}
 
-        />
+            {/* ==========================
+                ETAPA REVISÃO ANUAL
+            ========================== */}
 
-    )
-}
+            {
 
-{
-    etapa === 5.7 && (
+                etapa === 5.6 && (
 
-        <AdequacaoCorrecao
+                    <RevisaoAnual
 
-            adequacaoCorrecao={adequacaoCorrecao}
+                        revisaoAnual={
+                            revisaoAnual
+                        }
 
-            setAdequacaoCorrecao={setAdequacaoCorrecao}
+                        setRevisaoAnual={
+                            setRevisaoAnual
+                        }
 
-            setEtapa={setEtapa}
+                        setEtapa={
+                            setEtapa
+                        }
 
-        />
+                    />
 
-    )
+                )
 
-}
+            }
 
-{
-    etapa === 5.8 && (
 
-        <DadosGerais
+            {/* ==========================
+                ETAPA ADEQUAÇÃO / CORREÇÃO
+            ========================== */}
 
-            adequacaoCorrecao={adequacaoCorrecao}
+            {
 
-            setAdequacaoCorrecao={setAdequacaoCorrecao}
+                etapa === 5.7 && (
 
-            setEtapa={setEtapa}
+                    <AdequacaoCorrecao
 
-        />
+                        adequacaoCorrecao={
+                            adequacaoCorrecao
+                        }
 
-    )
+                        setAdequacaoCorrecao={
+                            setAdequacaoCorrecao
+                        }
 
-}
+                        setEtapa={
+                            setEtapa
+                        }
+
+                    />
+
+                )
+
+            }
+
+
+            {/* ==========================
+                ETAPA DADOS GERAIS
+            ========================== */}
+
+            {
+
+                etapa === 5.8 && (
+
+                    <DadosGerais
+
+                        adequacaoCorrecao={
+                            adequacaoCorrecao
+                        }
+
+                        setAdequacaoCorrecao={
+                            setAdequacaoCorrecao
+                        }
+
+                        setEtapa={
+                            setEtapa
+                        }
+
+                    />
+
+                )
+
+            }
+
+
             {/* ==========================
                 ETAPA 6
             ========================== */}
 
             {
 
-                etapa===6 && (
+                etapa === 6 && (
 
                     <ResumoSolicitacao
 
-    utSelecionada={utSelecionada}
+                        utSelecionada={
+                            utSelecionada
+                        }
 
-    cadastroAdministrativo={cadastroAdministrativo}
+                        cadastroAdministrativo={
+                            cadastroAdministrativo
+                        }
 
-    dadosCadastroOriginal={dadosCadastroOriginal}
+                        dadosCadastroOriginal={
+                            dadosCadastroOriginal
+                        }
 
-    dadosCadastro={dadosCadastro}
+                        dadosCadastro={
+                            dadosCadastro
+                        }
 
-    tipoSolicitacao={tipoSolicitacao}
+                        tipoSolicitacao={
+                            tipoSolicitacao
+                        }
 
-    documentosGerados={documentosGerados}
+                        documentosGerados={
+                            documentosGerados
+                        }
 
-    dadosSolicitacao={dadosSolicitacao}
-    
-    lancamentoLTCAT={lancamentoLTCAT}
+                        dadosSolicitacao={
+                            dadosSolicitacao
+                        }
 
-    revisaoAnual={revisaoAnual}
+                        lancamentoLTCAT={
+                            lancamentoLTCAT
+                        }
 
-    adequacaoCorrecao={adequacaoCorrecao}
-    
-    funcoes={funcoes}
+                        revisaoAnual={
+                            revisaoAnual
+                        }
 
-    protocolo={protocolo}
+                        adequacaoCorrecao={
+                            adequacaoCorrecao
+                        }
 
-    statusSolicitacao={statusSolicitacao}
+                        funcoes={
+                            funcoes
+                        }
 
-    aceite={aceite}
+                        protocolo={
+                            protocolo
+                        }
 
-    setAceite={setAceite}
+                        statusSolicitacao={
+                            statusSolicitacao
+                        }
 
-    setEtapa={setEtapa}
+                        aceite={
+                            aceite
+                        }
 
-    onEnviar={onEnviar}
+                        setAceite={
+                            setAceite
+                        }
 
-/>
+                        setEtapa={
+                            setEtapa
+                        }
+
+                        onEnviar={
+                            onEnviar
+                        }
+
+                        enviando={
+                            enviando
+                        }
+
+                    />
+
                 )
 
             }
+
 
         </div>
 
     );
 
 }
+
 
 export default Solicitacoes;

@@ -51,6 +51,97 @@ export async function buscarCadastro(numeroUT) {
 
 
 /* ============================
+   COMPARAR ALTERAÇÕES
+============================ */
+
+function compararAlteracoes(
+    anterior = {},
+    atual = {}
+) {
+
+    const camposIgnorados = [
+
+        "id",
+
+        "atualizadoEm",
+
+        "criadoEm",
+
+        "alteradoPorUid",
+
+        "alteradoPorNome",
+
+        "alteradoPorEmail"
+
+    ];
+
+
+    const campos = new Set([
+
+        ...Object.keys(anterior || {}),
+
+        ...Object.keys(atual || {})
+
+    ]);
+
+
+    const alteracoes = [];
+
+
+    campos.forEach(
+        (campo) => {
+
+
+            if (
+                camposIgnorados.includes(
+                    campo
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const valorAnterior =
+                anterior?.[campo] ?? "";
+
+
+            const valorAtual =
+                atual?.[campo] ?? "";
+
+
+            if (
+                String(valorAnterior).trim()
+                !==
+                String(valorAtual).trim()
+            ) {
+
+                alteracoes.push({
+
+                    campo,
+
+                    anterior:
+                        valorAnterior,
+
+                    atual:
+                        valorAtual
+
+                });
+
+            }
+
+        }
+
+    );
+
+
+    return alteracoes;
+
+}
+
+
+/* ============================
    SALVAR CADASTRO
 ============================ */
 
@@ -75,6 +166,40 @@ export async function salvarCadastro(
     );
 
 
+    /*
+    ==========================================
+    VERIFICAR SE JÁ EXISTE
+    ==========================================
+    */
+
+    const cadastroExistente =
+        await getDoc(
+            documento
+        );
+
+
+    const existe =
+        cadastroExistente.exists();
+
+
+    const dadosAnteriores =
+        existe
+
+            ?
+
+            cadastroExistente.data()
+
+            :
+
+            {};
+
+
+    /*
+    ==========================================
+    PREPARAR DADOS
+    ==========================================
+    */
+
     const dadosSalvar = {
 
         ...dados,
@@ -88,18 +213,53 @@ export async function salvarCadastro(
     };
 
 
+    /*
+    ==========================================
+    COMPARAR ALTERAÇÕES
+    ==========================================
+    */
+
+    const alteracoes =
+        compararAlteracoes(
+            dadosAnteriores,
+            dadosSalvar
+        );
+
+
     console.log(
-        "Salvando Cadastro Administrativo:",
+        "Cadastro anterior:",
+        dadosAnteriores
+    );
+
+
+    console.log(
+        "Novo cadastro:",
         dadosSalvar
     );
 
 
+    console.log(
+        "Alterações encontradas:",
+        alteracoes
+    );
+
+
+    /*
+    ==========================================
+    SALVAR
+    ==========================================
+    */
+
     await setDoc(
+
         documento,
+
         dadosSalvar,
+
         {
             merge: true
         }
+
     );
 
 
@@ -111,9 +271,18 @@ export async function salvarCadastro(
 
     return {
 
-        id: String(numeroUT),
+        id:
+            String(numeroUT),
 
-        ...dadosSalvar
+        ...dadosSalvar,
+
+        primeiroCadastro:
+            !existe,
+
+        houveAlteracao:
+            alteracoes.length > 0,
+
+        alteracoes
 
     };
 
@@ -145,6 +314,36 @@ export async function atualizarCadastro(
     );
 
 
+    /*
+    ==========================================
+    BUSCAR DADOS ANTERIORES
+    ==========================================
+    */
+
+    const cadastroExistente =
+        await getDoc(
+            documento
+        );
+
+
+    const dadosAnteriores =
+        cadastroExistente.exists()
+
+            ?
+
+            cadastroExistente.data()
+
+            :
+
+            {};
+
+
+    /*
+    ==========================================
+    PREPARAR DADOS
+    ==========================================
+    */
+
     const dadosAtualizar = {
 
         ...dados,
@@ -158,15 +357,37 @@ export async function atualizarCadastro(
     };
 
 
+    /*
+    ==========================================
+    IDENTIFICAR ALTERAÇÕES
+    ==========================================
+    */
+
+    const alteracoes =
+        compararAlteracoes(
+            dadosAnteriores,
+            dadosAtualizar
+        );
+
+
     console.log(
-        "Atualizando Cadastro Administrativo:",
-        dadosAtualizar
+        "Alterações encontradas:",
+        alteracoes
     );
 
 
+    /*
+    ==========================================
+    ATUALIZAR
+    ==========================================
+    */
+
     await updateDoc(
+
         documento,
+
         dadosAtualizar
+
     );
 
 
@@ -178,9 +399,18 @@ export async function atualizarCadastro(
 
     return {
 
-        id: String(numeroUT),
+        id:
+            String(numeroUT),
 
-        ...dadosAtualizar
+        ...dadosAtualizar,
+
+        primeiroCadastro:
+            false,
+
+        houveAlteracao:
+            alteracoes.length > 0,
+
+        alteracoes
 
     };
 
