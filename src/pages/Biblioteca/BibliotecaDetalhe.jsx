@@ -70,6 +70,27 @@ function BibliotecaDetalhe() {
         useState(false);
 
 
+    /*
+    ======================================================
+    VERIFICAR ADMINISTRADOR
+    ======================================================
+
+    Aceita os possíveis formatos utilizados
+    no cadastro do usuário.
+    */
+
+    const ehAdministrador =
+        [
+            "ADMIN",
+            "ADMINISTRADOR",
+            "ADMINISTRADOR SST"
+        ].includes(
+            String(perfil || "")
+                .trim()
+                .toUpperCase()
+        );
+
+
     /* ============================
        CARREGAR BIBLIOTECA
     ============================ */
@@ -120,6 +141,7 @@ function BibliotecaDetalhe() {
         const cancelar =
             onAuthStateChanged(
                 auth,
+
                 async (usuarioFirebase) => {
 
                     if (!usuarioFirebase) {
@@ -205,7 +227,12 @@ function BibliotecaDetalhe() {
                         ============================ */
 
                         if (
-                            perfilUsuario === "UT"
+                            String(
+                                perfilUsuario
+                            )
+                                .trim()
+                                .toUpperCase() ===
+                                "UT"
                             &&
                             String(
                                 numeroUTUsuario
@@ -289,9 +316,7 @@ function BibliotecaDetalhe() {
         documento
     ) {
 
-        if (
-            perfil !== "ADMIN"
-        ) {
+        if (!ehAdministrador) {
 
             alert(
                 "Você não possui permissão para editar documentos."
@@ -312,6 +337,11 @@ function BibliotecaDetalhe() {
 
             alert(
                 "Não foi possível identificar o documento para edição."
+            );
+
+            console.error(
+                "Dados necessários para edição não encontrados:",
+                documento
             );
 
             return;
@@ -493,9 +523,7 @@ function BibliotecaDetalhe() {
         documento
     ) {
 
-        if (
-            perfil !== "ADMIN"
-        ) {
+        if (!ehAdministrador) {
 
             alert(
                 "Você não possui permissão para excluir documentos."
@@ -516,6 +544,11 @@ function BibliotecaDetalhe() {
 
             alert(
                 "Não foi possível identificar o documento para exclusão."
+            );
+
+            console.error(
+                "Dados necessários para exclusão não encontrados:",
+                documento
             );
 
             return;
@@ -602,7 +635,9 @@ function BibliotecaDetalhe() {
         return (
 
             <h2>
+
                 Carregando...
+
             </h2>
 
         );
@@ -1182,15 +1217,12 @@ function BibliotecaDetalhe() {
 
 
                                                 {/* =========================
-                                                    EDITAR — SOMENTE ADMIN
+                                                    EDITAR — ADMINISTRADOR
                                                 ========================= */}
 
                                                 {
-                                                    perfil ===
-                                                    "ADMIN"
-
+                                                    ehAdministrador
                                                     &&
-
                                                     (
 
                                                         <button
@@ -1229,15 +1261,12 @@ function BibliotecaDetalhe() {
 
 
                                                 {/* =========================
-                                                    EXCLUIR — SOMENTE ADMIN
+                                                    EXCLUIR — ADMINISTRADOR
                                                 ========================= */}
 
                                                 {
-                                                    perfil ===
-                                                    "ADMIN"
-
+                                                    ehAdministrador
                                                     &&
-
                                                     (
 
                                                         <button
@@ -1273,6 +1302,7 @@ function BibliotecaDetalhe() {
 
                                                     )
                                                 }
+
 
                                             </div>
 
