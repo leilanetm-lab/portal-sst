@@ -7,7 +7,10 @@ import {
     serverTimestamp
 } from "firebase/firestore";
 
-import { db } from "../firebase/firebaseConfig";
+import {
+    auth,
+    db
+} from "../firebase/firebaseConfig";
 
 
 /* ============================
@@ -17,16 +20,23 @@ import { db } from "../firebase/firebaseConfig";
 export async function listarSolicitacoes() {
 
     const snapshot = await getDocs(
-        collection(db, "Solicitacoes")
+        collection(
+            db,
+            "Solicitacoes"
+        )
     );
 
-    return snapshot.docs.map((documento) => ({
 
-        id: documento.id,
+    return snapshot.docs.map(
+        (documento) => ({
 
-        ...documento.data()
+            id:
+                documento.id,
 
-    }));
+            ...documento.data()
+
+        })
+    );
 
 }
 
@@ -35,17 +45,27 @@ export async function listarSolicitacoes() {
    BUSCAR UMA SOLICITAÇÃO
 ============================ */
 
-export async function buscarSolicitacao(id) {
+export async function buscarSolicitacao(
+    id
+) {
 
-    const referencia = doc(
-        db,
-        "Solicitacoes",
-        id
-    );
+    const referencia =
+        doc(
+            db,
+            "Solicitacoes",
+            id
+        );
 
-    const documento = await getDoc(referencia);
 
-    if (!documento.exists()) {
+    const documento =
+        await getDoc(
+            referencia
+        );
+
+
+    if (
+        !documento.exists()
+    ) {
 
         throw new Error(
             "Solicitação não encontrada."
@@ -53,9 +73,11 @@ export async function buscarSolicitacao(id) {
 
     }
 
+
     return {
 
-        id: documento.id,
+        id:
+            documento.id,
 
         ...documento.data()
 
@@ -68,29 +90,36 @@ export async function buscarSolicitacao(id) {
    DAR ACEITE
 ============================ */
 
-export async function darAceiteSolicitacao(id) {
+export async function darAceiteSolicitacao(
+    id
+) {
 
-    const referencia = doc(
-        db,
-        "Solicitacoes",
-        id
+    const referencia =
+        doc(
+            db,
+            "Solicitacoes",
+            id
+        );
+
+
+    await updateDoc(
+        referencia,
+        {
+
+            status:
+                "Em Elaboração do PGR",
+
+            etapaWorkflow:
+                3,
+
+            aceite:
+                true,
+
+            aceiteEm:
+                serverTimestamp()
+
+        }
     );
-
-    await updateDoc(referencia, {
-
-        status:
-            "Em Elaboração do PGR",
-
-        etapaWorkflow:
-            3,
-
-        aceite:
-            true,
-
-        aceiteEm:
-            serverTimestamp()
-
-    });
 
 }
 
@@ -104,27 +133,32 @@ export async function devolverSolicitacao(
     motivo
 ) {
 
-    const referencia = doc(
-        db,
-        "Solicitacoes",
-        id
+    const referencia =
+        doc(
+            db,
+            "Solicitacoes",
+            id
+        );
+
+
+    await updateDoc(
+        referencia,
+        {
+
+            status:
+                "Correção Solicitada",
+
+            etapaWorkflow:
+                1,
+
+            motivoDevolucao:
+                motivo,
+
+            devolvidoEm:
+                serverTimestamp()
+
+        }
     );
-
-    await updateDoc(referencia, {
-
-        status:
-            "Correção Solicitada",
-
-        etapaWorkflow:
-            1,
-
-        motivoDevolucao:
-            motivo,
-
-        devolvidoEm:
-            serverTimestamp()
-
-    });
 
 }
 
@@ -139,22 +173,30 @@ export async function atualizarSolicitacaoCorrecao(
     dados
 ) {
 
-    const referencia = doc(
-        db,
-        "Solicitacoes",
-        id
-    );
+    const referencia =
+        doc(
+            db,
+            "Solicitacoes",
+            id
+        );
+
 
     const snapshot =
-        await getDoc(referencia);
+        await getDoc(
+            referencia
+        );
 
-    if (!snapshot.exists()) {
+
+    if (
+        !snapshot.exists()
+    ) {
 
         throw new Error(
             "Solicitação não encontrada."
         );
 
     }
+
 
     const dadosAtuais =
         snapshot.data();
@@ -207,28 +249,38 @@ export async function atualizarSolicitacaoCorrecao(
             ========================= */
 
             ut:
-                dadosCadastro.numeroUT ||
-                dadosAtuais.ut ||
+                dadosCadastro.numeroUT
+                ||
+                dadosAtuais.ut
+                ||
                 "",
 
             cliente:
-                dadosCadastro.cliente ||
-                dadosAtuais.cliente ||
+                dadosCadastro.cliente
+                ||
+                dadosAtuais.cliente
+                ||
                 "",
 
             cidade:
-                dadosCadastro.cidade ||
-                dadosAtuais.cidade ||
+                dadosCadastro.cidade
+                ||
+                dadosAtuais.cidade
+                ||
                 "",
 
             gerenteContrato:
-                dadosCadastro.gerenteContrato ||
-                dadosAtuais.gerenteContrato ||
+                dadosCadastro.gerenteContrato
+                ||
+                dadosAtuais.gerenteContrato
+                ||
                 "",
 
             emailGerente:
-                dadosCadastro.emailGerente ||
-                dadosAtuais.emailGerente ||
+                dadosCadastro.emailGerente
+                ||
+                dadosAtuais.emailGerente
+                ||
                 "",
 
 
@@ -255,6 +307,7 @@ export async function atualizarSolicitacaoCorrecao(
             lancamentoLTCAT,
 
             tipoLancamentoLTCAT:
+
                 lancamentoLTCAT.tipoLancamento ===
                 "todos"
 
@@ -329,6 +382,113 @@ export async function atualizarSolicitacaoCorrecao(
 }
 
 
+/* ======================================================
+   BUSCAR NOME DO USUÁRIO LOGADO
+====================================================== */
+
+async function obterNomeUsuarioLogado() {
+
+    const usuarioFirebase =
+        auth.currentUser;
+
+
+    /*
+    ==========================================
+    NÃO EXISTE USUÁRIO AUTENTICADO
+    ==========================================
+    */
+
+    if (
+        !usuarioFirebase
+    ) {
+
+        return "Usuário não identificado";
+
+    }
+
+
+    /*
+    ==========================================
+    BUSCAR CADASTRO DO USUÁRIO NO FIRESTORE
+    ==========================================
+    */
+
+    try {
+
+        const referenciaUsuario =
+            doc(
+                db,
+                "Usuarios",
+                usuarioFirebase.uid
+            );
+
+
+        const documentoUsuario =
+            await getDoc(
+                referenciaUsuario
+            );
+
+
+        if (
+            documentoUsuario.exists()
+        ) {
+
+            const dadosUsuario =
+                documentoUsuario.data();
+
+
+            /*
+            Prioridade:
+            1. nome cadastrado no portal
+            2. displayName do Firebase
+            3. email
+            */
+
+            return (
+
+                dadosUsuario.nome
+                ||
+                usuarioFirebase.displayName
+                ||
+                usuarioFirebase.email
+                ||
+                "Usuário"
+
+            );
+
+        }
+
+    }
+
+    catch (erro) {
+
+        console.error(
+            "Erro ao buscar nome do usuário logado:",
+            erro
+        );
+
+    }
+
+
+    /*
+    ==========================================
+    FALLBACK
+    ==========================================
+    */
+
+    return (
+
+        usuarioFirebase.displayName
+        ||
+        usuarioFirebase.email
+        ||
+        "Usuário"
+
+    );
+
+}
+
+
 /* ============================
    PUBLICAR DOCUMENTO
 ============================ */
@@ -339,26 +499,27 @@ export async function anexarDocumento(
 
     tipo,
 
-    documento,
-
-    usuario = "Leilane Moreira"
+    documento
 
 ) {
 
-    const referencia = doc(
+    const referencia =
+        doc(
+            db,
+            "Solicitacoes",
+            id
+        );
 
-        db,
-
-        "Solicitacoes",
-
-        id
-
-    );
 
     const snapshot =
-        await getDoc(referencia);
+        await getDoc(
+            referencia
+        );
 
-    if (!snapshot.exists()) {
+
+    if (
+        !snapshot.exists()
+    ) {
 
         throw new Error(
             "Solicitação não encontrada."
@@ -366,8 +527,20 @@ export async function anexarDocumento(
 
     }
 
+
     const dados =
         snapshot.data();
+
+
+    /*
+    ==========================================
+    BUSCAR AUTOMATICAMENTE QUEM ESTÁ LOGADO
+    ==========================================
+    */
+
+    const usuarioLogado =
+        await obterNomeUsuarioLogado();
+
 
     const lista =
         Array.isArray(
@@ -380,6 +553,12 @@ export async function anexarDocumento(
 
             : [];
 
+
+    /*
+    ==========================================
+    ADICIONAR DOCUMENTO
+    ==========================================
+    */
 
     lista.push({
 
@@ -395,11 +574,17 @@ export async function anexarDocumento(
             documento.url,
 
         observacao:
-            documento.observacao ||
+            documento.observacao
+            ||
             "",
 
+        /*
+        AGORA NÃO É MAIS FIXO.
+        VAI GRAVAR QUEM ESTÁ LOGADO.
+        */
+
         enviadoPor:
-            usuario,
+            usuarioLogado,
 
         enviadoEm:
             new Date().toISOString()
@@ -407,14 +592,23 @@ export async function anexarDocumento(
     });
 
 
+    /*
+    ==========================================
+    ATUALIZAR WORKFLOW
+    ==========================================
+    */
+
     let status =
         dados.status;
+
 
     let etapaWorkflow =
         dados.etapaWorkflow;
 
 
-    if (tipo === "pgr") {
+    if (
+        tipo === "pgr"
+    ) {
 
         status =
             "Em Elaboração do PCMSO";
@@ -425,7 +619,9 @@ export async function anexarDocumento(
     }
 
 
-    if (tipo === "pcmso") {
+    if (
+        tipo === "pcmso"
+    ) {
 
         status =
             "Concluído";
@@ -435,6 +631,12 @@ export async function anexarDocumento(
 
     }
 
+
+    /*
+    ==========================================
+    SALVAR
+    ==========================================
+    */
 
     await updateDoc(
         referencia,

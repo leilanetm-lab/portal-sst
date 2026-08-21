@@ -1,6 +1,9 @@
 import {
     collection,
-    getDocs
+    getDocs,
+    doc,
+    getDoc,
+    updateDoc
 } from "firebase/firestore";
 
 import { db } from "../firebase/firebaseConfig";
@@ -34,10 +37,10 @@ export async function listarBiblioteca() {
 
             /* =================================
                IDENTIFICAR UT
-               
+
                Primeiro usa o cadastro
                administrativo.
-               
+
                Se não existir, usa o campo
                principal "ut".
             ================================= */
@@ -339,7 +342,10 @@ export async function buscarBibliotecaUT(
 
 
                     lista[tipo].forEach(
-                        (arquivo) => {
+                        (
+                            arquivo,
+                            indice
+                        ) => {
 
                             if (
                                 !arquivo
@@ -351,6 +357,24 @@ export async function buscarBibliotecaUT(
 
 
                             documentos.push({
+
+                                /* =========================
+                                   IDENTIFICAÇÃO DO REGISTRO
+                                ========================= */
+
+                                solicitacaoId:
+                                    documento.id,
+
+                                tipoDocumento:
+                                    tipo,
+
+                                indiceDocumento:
+                                    indice,
+
+
+                                /* =========================
+                                   DADOS DO DOCUMENTO
+                                ========================= */
 
                                 tipo:
                                     tipo.toUpperCase(),
@@ -376,6 +400,12 @@ export async function buscarBibliotecaUT(
 
                                 enviadoPor:
                                     arquivo.enviadoPor
+                                    ||
+                                    "",
+
+
+                                enviadoPorUid:
+                                    arquivo.enviadoPorUid
                                     ||
                                     "",
 
@@ -469,6 +499,329 @@ export async function buscarBibliotecaUT(
         ut,
 
         documentos
+
+    };
+
+}
+
+
+/* =======================================
+   EDITAR DOCUMENTO DA BIBLIOTECA
+======================================= */
+
+export async function editarDocumentoBiblioteca({
+
+    solicitacaoId,
+
+    tipoDocumento,
+
+    indiceDocumento,
+
+    nome,
+
+    revisao,
+
+    url,
+
+    observacao,
+
+    editadoPor = "",
+
+    editadoPorUid = ""
+
+}) {
+
+    if (!solicitacaoId) {
+
+        throw new Error(
+            "Solicitação não informada."
+        );
+
+    }
+
+
+    if (
+        !tipoDocumento
+    ) {
+
+        throw new Error(
+            "Tipo do documento não informado."
+        );
+
+    }
+
+
+    if (
+        indiceDocumento === undefined ||
+        indiceDocumento === null
+    ) {
+
+        throw new Error(
+            "Índice do documento não informado."
+        );
+
+    }
+
+
+    const referencia =
+        doc(
+            db,
+            "Solicitacoes",
+            solicitacaoId
+        );
+
+
+    const documento =
+        await getDoc(
+            referencia
+        );
+
+
+    if (
+        !documento.exists()
+    ) {
+
+        throw new Error(
+            "Solicitação não encontrada."
+        );
+
+    }
+
+
+    const dados =
+        documento.data();
+
+
+    const documentos =
+        dados.documentos
+        ||
+        {};
+
+
+    const lista =
+        documentos[
+            tipoDocumento
+        ];
+
+
+    if (
+        !Array.isArray(lista)
+    ) {
+
+        throw new Error(
+            "Lista de documentos não encontrada."
+        );
+
+    }
+
+
+    if (
+        !lista[indiceDocumento]
+    ) {
+
+        throw new Error(
+            "Documento não encontrado."
+        );
+
+    }
+
+
+    /* =================================
+       ATUALIZAR SOMENTE O DOCUMENTO
+    ================================= */
+
+    const documentoAtual =
+        lista[indiceDocumento];
+
+
+    lista[indiceDocumento] = {
+
+        ...documentoAtual,
+
+        nome:
+            nome !== undefined
+                ? nome
+                : documentoAtual.nome,
+
+        revisao:
+            revisao !== undefined
+                ? revisao
+                : documentoAtual.revisao,
+
+        url:
+            url !== undefined
+                ? url
+                : documentoAtual.url,
+
+        observacao:
+            observacao !== undefined
+                ? observacao
+                : documentoAtual.observacao,
+
+        editadoPor,
+
+        editadoPorUid,
+
+        editadoEm:
+            new Date().toISOString()
+
+    };
+
+
+    await updateDoc(
+        referencia,
+        {
+
+            documentos
+
+        }
+    );
+
+
+    return {
+
+        sucesso: true,
+
+        documento:
+            lista[indiceDocumento]
+
+    };
+
+}
+
+
+/* =======================================
+   EXCLUIR DOCUMENTO DA BIBLIOTECA
+======================================= */
+
+export async function excluirDocumentoBiblioteca({
+
+    solicitacaoId,
+
+    tipoDocumento,
+
+    indiceDocumento
+
+}) {
+
+    if (!solicitacaoId) {
+
+        throw new Error(
+            "Solicitação não informada."
+        );
+
+    }
+
+
+    if (
+        !tipoDocumento
+    ) {
+
+        throw new Error(
+            "Tipo do documento não informado."
+        );
+
+    }
+
+
+    if (
+        indiceDocumento === undefined ||
+        indiceDocumento === null
+    ) {
+
+        throw new Error(
+            "Índice do documento não informado."
+        );
+
+    }
+
+
+    const referencia =
+        doc(
+            db,
+            "Solicitacoes",
+            solicitacaoId
+        );
+
+
+    const documento =
+        await getDoc(
+            referencia
+        );
+
+
+    if (
+        !documento.exists()
+    ) {
+
+        throw new Error(
+            "Solicitação não encontrada."
+        );
+
+    }
+
+
+    const dados =
+        documento.data();
+
+
+    const documentos =
+        dados.documentos
+        ||
+        {};
+
+
+    const lista =
+        documentos[
+            tipoDocumento
+        ];
+
+
+    if (
+        !Array.isArray(lista)
+    ) {
+
+        throw new Error(
+            "Lista de documentos não encontrada."
+        );
+
+    }
+
+
+    if (
+        !lista[indiceDocumento]
+    ) {
+
+        throw new Error(
+            "Documento não encontrado."
+        );
+
+    }
+
+
+    /* =================================
+       REMOVER DOCUMENTO
+    ================================= */
+
+    lista.splice(
+        indiceDocumento,
+        1
+    );
+
+
+    await updateDoc(
+        referencia,
+        {
+
+            documentos
+
+        }
+    );
+
+
+    return {
+
+        sucesso: true
 
     };
 

@@ -23,7 +23,9 @@ import {
 } from "../../firebase/firebaseConfig";
 
 import {
-    buscarBibliotecaUT
+    buscarBibliotecaUT,
+    editarDocumentoBiblioteca,
+    excluirDocumentoBiblioteca
 } from "../../services/bibliotecaService";
 
 import "./Biblioteca.css";
@@ -48,12 +50,65 @@ function BibliotecaDetalhe() {
         useState(false);
 
 
+    const [perfil, setPerfil] =
+        useState("");
+
+
+    const [usuarioLogado, setUsuarioLogado] =
+        useState(null);
+
+
     const [filtroAno, setFiltroAno] =
         useState("Todos");
 
 
     const [filtroDocumento, setFiltroDocumento] =
         useState("Todos");
+
+
+    const [processando, setProcessando] =
+        useState(false);
+
+
+    /* ============================
+       CARREGAR BIBLIOTECA
+    ============================ */
+
+    async function carregarBiblioteca() {
+
+        try {
+
+            setLoading(true);
+
+
+            const resposta =
+                await buscarBibliotecaUT(
+                    numeroUT
+                );
+
+
+            setDados(
+                resposta
+            );
+
+        }
+
+        catch (erro) {
+
+            console.error(
+                "Erro ao carregar biblioteca:",
+                erro
+            );
+
+        }
+
+        finally {
+
+            setLoading(false);
+
+        }
+
+    }
 
 
     /* ============================
@@ -98,7 +153,9 @@ function BibliotecaDetalhe() {
                             );
 
 
-                        if (!documentoUsuario.exists()) {
+                        if (
+                            !documentoUsuario.exists()
+                        ) {
 
                             setAcessoNegado(true);
 
@@ -113,7 +170,7 @@ function BibliotecaDetalhe() {
                             documentoUsuario.data();
 
 
-                        const perfil =
+                        const perfilUsuario =
                             usuario.perfil || "";
 
 
@@ -121,13 +178,42 @@ function BibliotecaDetalhe() {
                             usuario.numeroUT || "";
 
 
+                        setPerfil(
+                            perfilUsuario
+                        );
+
+
+                        setUsuarioLogado({
+
+                            uid:
+                                usuarioFirebase.uid,
+
+                            nome:
+                                usuario.nome
+                                ||
+                                usuarioFirebase.displayName
+                                ||
+                                usuarioFirebase.email
+                                ||
+                                ""
+
+                        });
+
+
                         /* ============================
                            VALIDAR ACESSO DA UT
                         ============================ */
 
                         if (
-                            perfil === "UT" &&
-                            numeroUTUsuario !== numeroUT
+                            perfilUsuario === "UT"
+                            &&
+                            String(
+                                numeroUTUsuario
+                            ).trim()
+                            !==
+                            String(
+                                numeroUT
+                            ).trim()
                         ) {
 
                             console.warn(
@@ -161,7 +247,9 @@ function BibliotecaDetalhe() {
                             );
 
 
-                        setDados(resposta);
+                        setDados(
+                            resposta
+                        );
 
                     }
 
@@ -194,6 +282,318 @@ function BibliotecaDetalhe() {
 
 
     /* ============================
+       EDITAR DOCUMENTO
+    ============================ */
+
+    async function editarDocumento(
+        documento
+    ) {
+
+        if (
+            perfil !== "ADMIN"
+        ) {
+
+            alert(
+                "Você não possui permissão para editar documentos."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !documento.solicitacaoId
+            ||
+            !documento.tipoDocumento
+            ||
+            documento.indiceDocumento === undefined
+        ) {
+
+            alert(
+                "Não foi possível identificar o documento para edição."
+            );
+
+            return;
+
+        }
+
+
+        /* ============================
+           NOVO NOME
+        ============================ */
+
+        const novoNome =
+            window.prompt(
+                "Nome do documento:",
+                documento.nome || ""
+            );
+
+
+        if (
+            novoNome === null
+        ) {
+
+            return;
+
+        }
+
+
+        /* ============================
+           NOVO LINK
+        ============================ */
+
+        const novoLink =
+            window.prompt(
+                "Link do documento:",
+                documento.url || ""
+            );
+
+
+        if (
+            novoLink === null
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !novoLink.trim()
+        ) {
+
+            alert(
+                "Informe um link válido."
+            );
+
+            return;
+
+        }
+
+
+        /* ============================
+           NOVA REVISÃO
+        ============================ */
+
+        const novaRevisao =
+            window.prompt(
+                "Revisão do documento:",
+                documento.revisao ?? ""
+            );
+
+
+        if (
+            novaRevisao === null
+        ) {
+
+            return;
+
+        }
+
+
+        /* ============================
+           OBSERVAÇÃO
+        ============================ */
+
+        const novaObservacao =
+            window.prompt(
+                "Observação:",
+                documento.observacao || ""
+            );
+
+
+        if (
+            novaObservacao === null
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            setProcessando(true);
+
+
+            await editarDocumentoBiblioteca({
+
+                solicitacaoId:
+                    documento.solicitacaoId,
+
+                tipoDocumento:
+                    documento.tipoDocumento,
+
+                indiceDocumento:
+                    documento.indiceDocumento,
+
+                nome:
+                    novoNome.trim(),
+
+                revisao:
+                    novaRevisao.trim(),
+
+                url:
+                    novoLink.trim(),
+
+                observacao:
+                    novaObservacao.trim(),
+
+                editadoPor:
+                    usuarioLogado?.nome
+                    ||
+                    "Administrador",
+
+                editadoPorUid:
+                    usuarioLogado?.uid
+                    ||
+                    ""
+
+            });
+
+
+            alert(
+                "Documento atualizado com sucesso!"
+            );
+
+
+            await carregarBiblioteca();
+
+        }
+
+        catch (erro) {
+
+            console.error(
+                "Erro ao editar documento:",
+                erro
+            );
+
+
+            alert(
+                "Não foi possível editar o documento."
+            );
+
+        }
+
+        finally {
+
+            setProcessando(false);
+
+        }
+
+    }
+
+
+    /* ============================
+       EXCLUIR DOCUMENTO
+    ============================ */
+
+    async function excluirDocumento(
+        documento
+    ) {
+
+        if (
+            perfil !== "ADMIN"
+        ) {
+
+            alert(
+                "Você não possui permissão para excluir documentos."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !documento.solicitacaoId
+            ||
+            !documento.tipoDocumento
+            ||
+            documento.indiceDocumento === undefined
+        ) {
+
+            alert(
+                "Não foi possível identificar o documento para exclusão."
+            );
+
+            return;
+
+        }
+
+
+        const confirmar =
+            window.confirm(
+
+                `Tem certeza que deseja excluir o documento "${documento.nome || documento.tipo}"?\n\n` +
+
+                "Essa ação removerá o documento da biblioteca."
+
+            );
+
+
+        if (
+            !confirmar
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            setProcessando(true);
+
+
+            await excluirDocumentoBiblioteca({
+
+                solicitacaoId:
+                    documento.solicitacaoId,
+
+                tipoDocumento:
+                    documento.tipoDocumento,
+
+                indiceDocumento:
+                    documento.indiceDocumento
+
+            });
+
+
+            alert(
+                "Documento excluído com sucesso!"
+            );
+
+
+            await carregarBiblioteca();
+
+        }
+
+        catch (erro) {
+
+            console.error(
+                "Erro ao excluir documento:",
+                erro
+            );
+
+
+            alert(
+                "Não foi possível excluir o documento."
+            );
+
+        }
+
+        finally {
+
+            setProcessando(false);
+
+        }
+
+    }
+
+
+    /* ============================
        CARREGANDO
     ============================ */
 
@@ -222,7 +622,9 @@ function BibliotecaDetalhe() {
 
                 <button
                     className="btnAbrir"
-                    onClick={() => navigate(-1)}
+                    onClick={() =>
+                        navigate(-1)
+                    }
                 >
 
                     ← Voltar
@@ -254,7 +656,11 @@ function BibliotecaDetalhe() {
        UT NÃO ENCONTRADA
     ============================ */
 
-    if (!dados || !dados.ut) {
+    if (
+        !dados
+        ||
+        !dados.ut
+    ) {
 
         return (
 
@@ -262,7 +668,9 @@ function BibliotecaDetalhe() {
 
                 <button
                     className="btnAbrir"
-                    onClick={() => navigate(-1)}
+                    onClick={() =>
+                        navigate(-1)
+                    }
                 >
 
                     ← Voltar
@@ -294,13 +702,34 @@ function BibliotecaDetalhe() {
         ...new Set(
 
             dados.documentos.map(
-                documento => documento.ano
+                documento =>
+                    documento.ano
             )
 
         )
 
     ].sort(
-        (a, b) => b - a
+        (a, b) => {
+
+            if (
+                a === "Todos"
+            ) {
+
+                return -1;
+
+            }
+
+            if (
+                b === "Todos"
+            ) {
+
+                return 1;
+
+            }
+
+            return b - a;
+
+        }
     );
 
 
@@ -319,7 +748,9 @@ function BibliotecaDetalhe() {
                     ||
 
                     documento.ano ===
-                    Number(filtroAno);
+                    Number(
+                        filtroAno
+                    );
 
 
                 const documentoOK =
@@ -333,7 +764,8 @@ function BibliotecaDetalhe() {
 
 
                 return (
-                    anoOK &&
+                    anoOK
+                    &&
                     documentoOK
                 );
 
@@ -352,7 +784,10 @@ function BibliotecaDetalhe() {
 
             <button
                 className="btnAbrir"
-                onClick={() => navigate(-1)}
+                onClick={() =>
+                    navigate(-1)
+                }
+                disabled={processando}
             >
 
                 ← Voltar
@@ -365,24 +800,27 @@ function BibliotecaDetalhe() {
             ============================ */}
 
             <h1>
-    📚 Histórico Documental
-</h1>
 
-<div className="cabecalhoUnidadeBiblioteca">
+                📚 Histórico Documental
 
-    <span>
-        Unidade
-    </span>
+            </h1>
 
-    <strong>
-        {dados.ut.nomeUT}
-    </strong>
 
-    <small>
-        {dados.ut.numeroUT}
-    </small>
+            <div className="cabecalhoUnidadeBiblioteca">
 
-</div>
+                <span>
+                    Unidade
+                </span>
+
+                <strong>
+                    {dados.ut.nomeUT}
+                </strong>
+
+                <small>
+                    {dados.ut.numeroUT}
+                </small>
+
+            </div>
 
 
             {/* ============================
@@ -473,27 +911,24 @@ function BibliotecaDetalhe() {
                         )
                     }
 
+                    disabled={processando}
+
                 >
 
                     <option value="Todos">
-
                         Todos
-
                     </option>
 
 
                     <option value="PGR">
-
                         PGR
-
                     </option>
 
 
                     <option value="PCMSO">
-
                         PCMSO
-
                     </option>
+
 
                 </select>
 
@@ -510,10 +945,11 @@ function BibliotecaDetalhe() {
                         )
                     }
 
+                    disabled={processando}
+
                 >
 
                     {
-
                         anos.map(
                             (ano) => (
 
@@ -527,12 +963,11 @@ function BibliotecaDetalhe() {
                                 </option>
 
                             )
-
                         )
-
                     }
 
                 </select>
+
 
             </div>
 
@@ -568,7 +1003,9 @@ function BibliotecaDetalhe() {
                             Data
                         </th>
 
-                        <th></th>
+                        <th>
+                            Ação
+                        </th>
 
                     </tr>
 
@@ -578,125 +1015,309 @@ function BibliotecaDetalhe() {
                 <tbody>
 
 
-                    {documentos.length === 0 ? (
+                    {
+                        documentos.length === 0
 
-                        <tr>
+                        ?
 
-                            <td
-                                colSpan="6"
-                                style={{
-                                    textAlign: "center",
-                                    padding: "30px"
-                                }}
-                            >
+                        (
 
-                                Nenhum documento
-                                encontrado.
+                            <tr>
 
-                            </td>
+                                <td
+                                    colSpan="6"
+                                    style={{
+                                        textAlign:
+                                            "center",
 
-                        </tr>
-
-                    ) : (
-
-                        documentos.map(
-                            (documento, index) => (
-
-                                <tr
-                                    key={index}
+                                        padding:
+                                            "30px"
+                                    }}
                                 >
 
-                                    <td>
+                                    Nenhum documento
+                                    encontrado.
 
-                                        {
-                                            documento.tipo
+                                </td>
+
+                            </tr>
+
+                        )
+
+                        :
+
+                        (
+
+                            documentos.map(
+                                (
+                                    documento,
+                                    index
+                                ) => (
+
+                                    <tr
+                                        key={
+                                            documento.solicitacaoId
+                                            +
+                                            "-"
+                                            +
+                                            documento.tipoDocumento
+                                            +
+                                            "-"
+                                            +
+                                            documento.indiceDocumento
+                                            +
+                                            "-"
+                                            +
+                                            index
                                         }
+                                    >
 
-                                    </td>
+                                        <td>
 
+                                            {
+                                                documento.tipo
+                                            }
 
-                                    <td>
-
-                                        REV{" "}
-
-                                        {
-                                            String(
-                                                documento.revisao
-                                            ).padStart(
-                                                2,
-                                                "0"
-                                            )
-                                        }
-
-                                    </td>
+                                        </td>
 
 
-                                    <td>
+                                        <td>
 
-                                        {
-                                            documento.ano
-                                        }
+                                            REV{" "}
 
-                                    </td>
+                                            {
+                                                String(
+                                                    documento.revisao
+                                                    ??
+                                                    ""
+                                                ).padStart(
+                                                    2,
+                                                    "0"
+                                                )
+                                            }
+
+                                        </td>
 
 
-                                    <td>
+                                        <td>
 
-                                        {
-                                            documento.enviadoPor
-                                        }
+                                            {
+                                                documento.ano
+                                            }
 
-                                    </td>
+                                        </td>
 
 
-                                    <td>
+                                        <td>
 
-                                        {
-                                            documento.enviadoEm
-                                                ? new Date(
+                                            {
+                                                documento.enviadoPor
+                                                ||
+                                                "-"
+                                            }
+
+                                        </td>
+
+
+                                        <td>
+
+                                            {
+                                                documento.enviadoEm
+
+                                                ?
+
+                                                new Date(
                                                     documento.enviadoEm
                                                 ).toLocaleDateString(
                                                     "pt-BR"
                                                 )
-                                                : "-"
-                                        }
 
-                                    </td>
+                                                :
 
-
-                                    <td>
-
-                                        <button
-
-                                            className="btnAbrir"
-
-                                            onClick={() =>
-                                                window.open(
-                                                    documento.url,
-                                                    "_blank"
-                                                )
+                                                "-"
                                             }
 
-                                        >
+                                        </td>
 
-                                            📄 Abrir
 
-                                        </button>
+                                        <td>
 
-                                    </td>
+                                            <div
+                                                style={{
+                                                    display:
+                                                        "flex",
 
-                                </tr>
+                                                    gap:
+                                                        "6px",
+
+                                                    flexWrap:
+                                                        "wrap"
+                                                }}
+                                            >
+
+                                                {/* =========================
+                                                    ABRIR
+                                                ========================= */}
+
+                                                <button
+
+                                                    className="btnAbrir"
+
+                                                    onClick={() =>
+                                                        window.open(
+                                                            documento.url,
+                                                            "_blank"
+                                                        )
+                                                    }
+
+                                                    disabled={
+                                                        processando
+                                                    }
+
+                                                >
+
+                                                    📄 Abrir
+
+                                                </button>
+
+
+                                                {/* =========================
+                                                    EDITAR — SOMENTE ADMIN
+                                                ========================= */}
+
+                                                {
+                                                    perfil ===
+                                                    "ADMIN"
+
+                                                    &&
+
+                                                    (
+
+                                                        <button
+
+                                                            className="btnAbrir"
+
+                                                            onClick={() =>
+                                                                editarDocumento(
+                                                                    documento
+                                                                )
+                                                            }
+
+                                                            disabled={
+                                                                processando
+                                                            }
+
+                                                            style={{
+                                                                background:
+                                                                    "#f0ad4e",
+
+                                                                color:
+                                                                    "#fff",
+
+                                                                border:
+                                                                    "none"
+                                                            }}
+
+                                                        >
+
+                                                            ✏️ Editar
+
+                                                        </button>
+
+                                                    )
+                                                }
+
+
+                                                {/* =========================
+                                                    EXCLUIR — SOMENTE ADMIN
+                                                ========================= */}
+
+                                                {
+                                                    perfil ===
+                                                    "ADMIN"
+
+                                                    &&
+
+                                                    (
+
+                                                        <button
+
+                                                            className="btnAbrir"
+
+                                                            onClick={() =>
+                                                                excluirDocumento(
+                                                                    documento
+                                                                )
+                                                            }
+
+                                                            disabled={
+                                                                processando
+                                                            }
+
+                                                            style={{
+                                                                background:
+                                                                    "#d9534f",
+
+                                                                color:
+                                                                    "#fff",
+
+                                                                border:
+                                                                    "none"
+                                                            }}
+
+                                                        >
+
+                                                            🗑️ Excluir
+
+                                                        </button>
+
+                                                    )
+                                                }
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                )
 
                             )
 
                         )
 
-                    )}
+                    }
 
 
                 </tbody>
 
             </table>
+
+
+            {
+                processando
+                &&
+                (
+
+                    <div
+                        style={{
+                            marginTop:
+                                "15px",
+
+                            color:
+                                "#555",
+
+                            fontWeight:
+                                "600"
+                        }}
+                    >
+
+                        Processando...
+
+                    </div>
+
+                )
+            }
 
 
         </div>
