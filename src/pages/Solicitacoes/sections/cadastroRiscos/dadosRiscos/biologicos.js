@@ -2,7 +2,7 @@ const biologicos = [
 
     {
         id: 1,
-        nome: "Biológico - outras atividades"
+        nome: "Agentes biológicos - Outras atividades"
     },
 
     {
@@ -17,26 +17,31 @@ const biologicos = [
 
     {
         id: 4,
-        nome: "Biológico - Trabalho de exumação de corpos e manipulação de resíduos de animais deteriorados"
+        nome: "Biológico - outras atividades"
     },
 
     {
         id: 5,
-        nome: "Biológico - Trabalhos com animais infectados para tratamento ou para o preparo de soro, vacinas e outros produtos"
+        nome: "Biológico - Trabalho de exumação de corpos e manipulação de resíduos de animais deteriorados"
     },
 
     {
         id: 6,
-        nome: "Biológico - Trabalhos em estabelecimentos de saúde com contato com pacientes portadores de doenças infectocontagiosas ou com manuseio de materiais contaminados"
+        nome: "Biológico - Trabalhos com animais infectados para tratamento ou para o preparo de soro, vacinas e outros produtos"
     },
 
     {
         id: 7,
-        nome: "Biológico - Trabalhos em galerias, fossas e tranques de esgoto"
+        nome: "Biológico - Trabalhos em estabelecimentos de saúde com contato com pacientes portadores de doenças infectocontagiosas ou com manuseio de materiais contaminados"
     },
 
     {
         id: 8,
+        nome: "Biológico - Trabalhos em galerias, fossas e tranques de esgoto"
+    },
+
+    {
+        id: 9,
         nome: "Biológico - Trabalhos em laboratórios de autópsia, de anatomia e anátomo-histologia"
     }
 

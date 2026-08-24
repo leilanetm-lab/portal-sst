@@ -159,7 +159,7 @@ const quimicos = [
     { id: 79, nome: "Dibutilftalato (ftalato de dibutila)" },
 
     { id: 80, nome: "Diclorofluormetano (freon 12)" },
-    
+
     { id: 81, nome: "Diclorometano (Cloreto de metileno)" },
 
     { id: 82, nome: "Diclorotetrafluoretano (freon 114)" },
@@ -233,7 +233,7 @@ const quimicos = [
     { id: 116, nome: "Ftalato de di(2-etilhexila)" },
 
     { id: 117, nome: "Fumos metálicos" },
-    
+
     { id: 118, nome: "Gasolina" },
 
     { id: 119, nome: "Hexano, outros isômeros que não o n-Hexano" },
@@ -319,7 +319,7 @@ const quimicos = [
     { id: 159, nome: "Ozônio - Trabalho moderado" },
 
     { id: 160, nome: "p-Diclorobenzeno" },
-    
+
     { id: 161, nome: "Parafina, cera (fumos)" },
 
     { id: 162, nome: "Particulados (PNOS) - não respiráveis" },
@@ -446,7 +446,7 @@ const quimicos = [
 
     { id: 223, nome: "Silicato de cálcio, sintético não fibroso" },
 
-    { id: 224, nome: "Silicatos" }
+    { id: 224, nome: "Silicatos"}
 
 ];
 
