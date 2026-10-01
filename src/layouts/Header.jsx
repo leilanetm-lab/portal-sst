@@ -21,15 +21,16 @@ import {
     sair
 } from "../services/authService";
 
+import {
+    marcarNotificacaoComoLida,
+    marcarTodasComoLidas,
+    ouvirNotificacoes
+} from "../services/notificacoesService";
+
 
 function Header() {
 
     const navigate = useNavigate();
-
-
-    /* ============================
-       DATA
-    ============================ */
 
     const hoje =
         new Date().toLocaleDateString(
@@ -41,11 +42,6 @@ function Header() {
                 year: "numeric"
             }
         );
-
-
-    /* ============================
-       ESTADOS
-    ============================ */
 
     const [nomeUsuario, setNomeUsuario] =
         useState("Carregando...");
@@ -59,67 +55,74 @@ function Header() {
     const [saindo, setSaindo] =
         useState(false);
 
+    const [notificacoes, setNotificacoes] =
+        useState([]);
 
-    /* ============================
-       OBSERVAR LOGIN
-    ============================ */
+    const [painelAberto, setPainelAberto] =
+        useState(false);
 
     useEffect(() => {
+
+        let cancelarListener = () => {};
 
         const cancelar =
             onAuthStateChanged(
                 auth,
                 async (usuarioFirebase) => {
 
+                    cancelarListener();
+
                     if (!usuarioFirebase) {
 
-                        setNomeUsuario(
-                            "Usuário"
-                        );
-
-                        setPerfilUsuario(
-                            ""
-                        );
-
-                        setIniciais(
-                            "US"
-                        );
-
+                        setNomeUsuario("Usuário");
+                        setPerfilUsuario("");
+                        setIniciais("US");
+                        setNotificacoes([]);
                         return;
 
                     }
 
+                    await carregarDadosUsuario(usuarioFirebase.uid);
 
-                    await carregarDadosUsuario(
-                        usuarioFirebase.uid
-                    );
+                    cancelarListener =
+                        ouvirNotificacoes(
+                            usuarioFirebase.uid,
+                            (lista) => setNotificacoes(lista)
+                        );
 
                 }
             );
 
-
         return () => {
-
+            cancelarListener();
             cancelar();
-
         };
 
     }, []);
 
+    useEffect(() => {
 
-    /* ============================
-       BUSCAR USUÁRIO NO FIRESTORE
-    ============================ */
+        if (!painelAberto) {
+            return undefined;
+        }
+
+        const fecharPainel = (evento) => {
+            if (!evento.target.closest(".areaNotificacao")) {
+                setPainelAberto(false);
+            }
+        };
+
+        document.addEventListener("click", fecharPainel);
+
+        return () => {
+            document.removeEventListener("click", fecharPainel);
+        };
+
+    }, [painelAberto]);
 
     async function carregarDadosUsuario(uid) {
 
         try {
-
-            console.log(
-                "UID logado:",
-                uid
-            );
-
 
             const referencia =
                 doc(
@@ -128,159 +131,47 @@ function Header() {
                     uid
                 );
 
-
             const documento =
-                await getDoc(
-                    referencia
-                );
-
-
-            console.log(
-                "Documento do usuário existe:",
-                documento.exists()
-            );
-
+                await getDoc(referencia);
 
             if (!documento.exists()) {
-
-                console.error(
-                    "Não encontrei o usuário na coleção Usuarios."
-                );
-
-                setNomeUsuario(
-                    "Usuário"
-                );
-
-                setPerfilUsuario(
-                    "Não identificado"
-                );
-
-                setIniciais(
-                    "US"
-                );
-
+                setNomeUsuario("Usuário");
+                setPerfilUsuario("Não identificado");
+                setIniciais("US");
                 return;
-
             }
 
+            const dados = documento.data();
 
-            const dados =
-                documento.data();
-
-
-            console.log(
-                "Dados do usuário:",
-                dados
-            );
-
-
-            /* ============================
-               UT
-            ============================ */
-
-            if (
-                dados.perfil === "UT"
-            ) {
-
-                const nome =
-                    dados.nomeUT ||
-                    dados.nome ||
-                    "Usuário UT";
-
-
-                definirUsuario(
-                    nome,
-                    "Usuário UT"
-                );
-
-
+            if (dados.perfil === "UT") {
+                const nome = dados.nomeUT || dados.nome || "Usuário UT";
+                definirUsuario(nome, "Usuário UT");
                 return;
-
             }
 
-
-            /* ============================
-               ADMIN
-            ============================ */
-
-            if (
-                dados.perfil === "ADMIN"
-            ) {
-
-                const nome =
-                    dados.nome ||
-                    "Administrador";
-
-
-                definirUsuario(
-                    nome,
-                    "Administrador SST"
-                );
-
-
+            if (dados.perfil === "ADMIN") {
+                const nome = dados.nome || "Administrador";
+                definirUsuario(nome, "Administrador SST");
                 return;
-
             }
 
-
-            /* ============================
-               PERFIL NÃO RECONHECIDO
-            ============================ */
-
-            const nome =
-                dados.nomeUT ||
-                dados.nome ||
-                "Usuário";
-
-
-            definirUsuario(
-                nome,
-                dados.perfil || "Usuário"
-            );
+            const nome = dados.nomeUT || dados.nome || "Usuário";
+            definirUsuario(nome, dados.perfil || "Usuário");
 
         }
-
         catch (erro) {
-
-            console.error(
-                "Erro ao buscar usuário:",
-                erro
-            );
-
-            setNomeUsuario(
-                "Erro ao carregar"
-            );
-
-            setPerfilUsuario(
-                ""
-            );
-
-            setIniciais(
-                "ER"
-            );
-
+            console.error("Erro ao buscar usuário:", erro);
+            setNomeUsuario("Erro ao carregar");
+            setPerfilUsuario("");
+            setIniciais("ER");
         }
 
     }
 
+    function definirUsuario(nome, perfil) {
 
-    /* ============================
-       DEFINIR USUÁRIO
-    ============================ */
-
-    function definirUsuario(
-        nome,
-        perfil
-    ) {
-
-        setNomeUsuario(
-            nome
-        );
-
-        setPerfilUsuario(
-            perfil
-        );
-
+        setNomeUsuario(nome);
+        setPerfilUsuario(perfil);
 
         const partes =
             String(nome)
@@ -288,182 +179,242 @@ function Header() {
                 .split(/\s+/)
                 .filter(Boolean);
 
+        let iniciaisGeradas = "US";
 
-        let iniciaisGeradas =
-            "US";
-
-
-        if (
-            partes.length >= 2
-        ) {
-
-            iniciaisGeradas =
-                (
-                    partes[0][0] +
-                    partes[partes.length - 1][0]
-                ).toUpperCase();
-
+        if (partes.length >= 2) {
+            iniciaisGeradas = (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+        } else if (partes.length === 1) {
+            iniciaisGeradas = partes[0].substring(0, 2).toUpperCase();
         }
 
-        else if (
-            partes.length === 1
-        ) {
-
-            iniciaisGeradas =
-                partes[0]
-                    .substring(0, 2)
-                    .toUpperCase();
-
-        }
-
-
-        setIniciais(
-            iniciaisGeradas
-        );
+        setIniciais(iniciaisGeradas);
 
     }
 
+    const naoLidas =
+        notificacoes.filter((notificacao) => !notificacao.lida).length;
 
-    /* ============================
-       SAIR
-    ============================ */
+    function formatarTempo(criadoEm) {
+
+        if (!criadoEm) {
+            return "Agora";
+        }
+
+        const data = criadoEm?.toDate ? criadoEm.toDate() : new Date(criadoEm);
+        const diferenca = Date.now() - data.getTime();
+
+        if (Number.isNaN(diferenca)) {
+            return "Agora";
+        }
+
+        const minutos = Math.max(1, Math.round(diferenca / 60000));
+
+        if (minutos < 60) {
+            return `Há ${minutos} minuto${minutos === 1 ? "" : "s"}`;
+        }
+
+        const horas = Math.round(minutos / 60);
+
+        if (horas < 24) {
+            return `Há ${horas} hora${horas === 1 ? "" : "s"}`;
+        }
+
+        const dias = Math.round(horas / 24);
+        return `Há ${dias} dia${dias === 1 ? "" : "s"}`;
+
+    }
+
+    function obterIcone(tipo) {
+
+        const valor = String(tipo || "").toLowerCase();
+
+        if (valor.includes("solicitacao") || valor.includes("pgr")) return "📩";
+        if (valor.includes("correc") || valor.includes("devolv")) return "🔁";
+        if (valor.includes("cadastro")) return "📝";
+        if (valor.includes("analise") || valor.includes("alerta") || valor.includes("pendencia")) return "⚠️";
+
+        return "🔔";
+
+    }
+
+    function abrirDestino(notificacao) {
+
+        if (notificacao?.rota) {
+            navigate(notificacao.rota);
+            return;
+        }
+
+        if (notificacao?.solicitacaoId) {
+            navigate(`/solicitacoes/${notificacao.solicitacaoId}`);
+            return;
+        }
+
+        navigate("/notificacoes");
+
+    }
+
+    async function aoClicarNotificacao(notificacao) {
+
+        if (notificacao?.id && !notificacao.lida) {
+            await marcarNotificacaoComoLida(notificacao.id);
+        }
+
+        setPainelAberto(false);
+        abrirDestino(notificacao);
+
+    }
+
+    async function marcarTodasLidasNoPainel() {
+
+        if (!notificacoes.length) {
+            return;
+        }
+
+        await marcarTodasComoLidas(notificacoes);
+
+    }
 
     async function sairDoPortal() {
 
         try {
 
             setSaindo(true);
-
             await sair();
-
             navigate("/");
 
         }
-
         catch (erro) {
 
-            console.error(
-                "Erro ao sair:",
-                erro
-            );
-
-            alert(
-                "Não foi possível sair do portal."
-            );
-
+            console.error("Erro ao sair:", erro);
+            alert("Não foi possível sair do portal.");
             setSaindo(false);
 
         }
 
     }
 
-
     return (
 
         <header className="header">
 
-
             <div className="headerEsquerda">
 
                 <h1>
-
                     Portal SST
-
                 </h1>
 
                 <span>
-
                     {hoje}
-
                 </span>
 
             </div>
 
-
             <div className="headerDireita">
 
+                <div className="areaNotificacao">
 
-                {/* ============================
-                    NOTIFICAÇÕES
-                ============================ */}
-
-                <button
-                    className="btnNotificacao"
-                    type="button"
-                >
-
-                    🔔
-
-                    <span
-                        className="badgeNotificacao"
+                    <button
+                        className="btnNotificacao"
+                        type="button"
+                        onClick={() => setPainelAberto((valor) => !valor)}
                     >
+                        🔔
 
-                        0
+                        {naoLidas > 0 && (
+                            <span className="badgeNotificacao">
+                                {naoLidas > 99 ? "99+" : naoLidas}
+                            </span>
+                        )}
 
-                    </span>
+                    </button>
 
-                </button>
+                    {painelAberto && (
+                        <div className="painelNotificacoes">
 
+                            <div className="cabecalhoNotificacoes">
+                                <strong>Notificações</strong>
 
-                {/* ============================
-                    USUÁRIO
-                ============================ */}
+                                {naoLidas > 0 && (
+                                    <button
+                                        type="button"
+                                        className="btnMarcarLidas"
+                                        onClick={marcarTodasLidasNoPainel}
+                                    >
+                                        Marcar todas como lidas
+                                    </button>
+                                )}
+                            </div>
 
-                <div className="usuarioHeader">
+                            {notificacoes.length === 0 ? (
+                                <div className="semNotificacoes">
+                                    <div>🔔</div>
+                                    <strong>Sem novas notificações</strong>
+                                    <span>Você está em dia com a sua conta.</span>
+                                </div>
+                            ) : (
+                                <div className="listaNotificacoes">
+                                    {notificacoes.slice(0, 6).map((notificacao) => (
+                                        <button
+                                            key={notificacao.id}
+                                            type="button"
+                                            className={`itemNotificacao ${!notificacao.lida ? "naoLida" : ""}`}
+                                            onClick={() => aoClicarNotificacao(notificacao)}
+                                        >
+                                            <span className="iconeNotificacao">
+                                                {obterIcone(notificacao.tipo)}
+                                            </span>
 
-                    <div>
+                                            <div className="conteudoNotificacao">
+                                                <strong>{notificacao.titulo || "Notificação"}</strong>
+                                                <p>{notificacao.mensagem || notificacao.descricao || "Sem descrição."}</p>
+                                                <small>{formatarTempo(notificacao.criadoEm)}</small>
+                                            </div>
 
-                        <strong>
+                                            {!notificacao.lida && <span className="pontoNaoLida" />}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
 
-                            {nomeUsuario}
+                            {notificacoes.length > 0 && (
+                                <div className="cabecalhoNotificacoes cabecalhoNotificacoesInferior">
+                                    <button
+                                        type="button"
+                                        className="btnVerTodasNotificacoes"
+                                        onClick={() => {
+                                            setPainelAberto(false);
+                                            navigate("/notificacoes");
+                                        }}
+                                    >
+                                        Ver todas as notificações
+                                    </button>
+                                </div>
+                            )}
 
-                        </strong>
-
-                        <small>
-
-                            {perfilUsuario}
-
-                        </small>
-
-                    </div>
-
-
-                    <div className="avatarUsuario">
-
-                        {iniciais}
-
-                    </div>
+                        </div>
+                    )}
 
                 </div>
 
+                <div className="usuarioHeader">
+                    <div>
+                        <strong>{nomeUsuario}</strong>
+                        <small>{perfilUsuario}</small>
+                    </div>
 
-                {/* ============================
-                    SAIR
-                ============================ */}
+                    <div className="avatarUsuario">
+                        {iniciais}
+                    </div>
+                </div>
 
                 <button
-
                     type="button"
-
                     className="btnSair"
-
-                    onClick={
-                        sairDoPortal
-                    }
-
-                    disabled={
-                        saindo
-                    }
-
+                    onClick={sairDoPortal}
+                    disabled={saindo}
                 >
-
-                    {saindo
-                        ? "Saindo..."
-                        : "Sair"
-                    }
-
+                    {saindo ? "Saindo..." : "Sair"}
                 </button>
-
 
             </div>
 
@@ -472,6 +423,5 @@ function Header() {
     );
 
 }
-
 
 export default Header;

@@ -17,7 +17,9 @@ import {
     buscarSolicitacao,
     darAceiteSolicitacao,
     devolverSolicitacao,
-    anexarDocumento
+    anexarDocumento,
+    atualizarAcompanhamentoCliente,
+    concluirAcompanhamentoCliente
 } from "../../services/solicitacoesService";
 
 import ResumoSolicitacaoVisualizacao
@@ -389,6 +391,157 @@ function DetalheSolicitacao() {
     }
 
 
+    async function salvarAcompanhamentoCliente(
+        dadosAcompanhamento
+    ) {
+
+        try {
+
+            await atualizarAcompanhamentoCliente(
+                id,
+                dadosAcompanhamento
+            );
+
+            await carregar();
+
+            alert(
+                "Acompanhamento do cliente atualizado com sucesso."
+            );
+
+        }
+        catch (erro) {
+
+            console.error(
+                "Erro ao atualizar acompanhamento do cliente:",
+                erro
+            );
+
+            alert(
+                erro?.message ||
+                "Erro ao atualizar acompanhamento do cliente."
+            );
+
+        }
+
+    }
+
+
+    async function concluirAcompanhamentoClienteFluxo(
+        dadosAcompanhamento
+    ) {
+
+        try {
+
+            await concluirAcompanhamentoCliente(
+                id,
+                dadosAcompanhamento
+            );
+
+            await carregar();
+
+            alert(
+                "Solicitação concluída com sucesso."
+            );
+
+        }
+        catch (erro) {
+
+            console.error(
+                "Erro ao concluir solicitação:",
+                erro
+            );
+
+            alert(
+                erro?.message ||
+                "Erro ao concluir solicitação."
+            );
+
+        }
+
+    }
+
+
+    async function avancarParaCorrecao(motivoInformado) {
+
+        const motivo =
+            String(
+                motivoInformado ??
+                dados?.motivoReprovacaoCliente ??
+                ""
+            )
+                .trim();
+
+        const protocoloOriginal =
+            dados?.protocolo || "";
+
+        if (!motivo) {
+            alert("É necessário informar o motivo da reprovação antes de avançar para a correção.");
+            return;
+        }
+
+        const confirmar =
+            window.confirm(
+                `A solicitação será convertida em uma correção originada pela reprovação do cliente.\n\nSolicitação original: ${protocoloOriginal}\nMotivo: ${motivo}`
+            );
+
+        if (!confirmar) {
+            return;
+        }
+
+        try {
+
+            const dataReprovacao =
+                new Date().toISOString().slice(0, 10);
+
+            const dataPostagemCliente =
+                dados?.dataPostagemCliente?.toDate
+                    ? dados.dataPostagemCliente.toDate().toISOString().slice(0, 10)
+                    : dados?.dataPostagemCliente || "";
+
+            const dataRespostaPostagem =
+                dados?.dataRespostaPostagem?.toDate
+                    ? dados.dataRespostaPostagem.toDate().toISOString()
+                    : dados?.dataRespostaPostagem || new Date().toISOString();
+
+            await atualizarAcompanhamentoCliente(
+                id,
+                {
+                    ...dados,
+                    clienteExigePostagem:
+                        dados?.clienteExigePostagem ?? true,
+                    dataRespostaPostagem,
+                    dataPostagemCliente,
+                    dataAguardandoRetorno: null,
+                    statusAprovacaoCliente: "reprovado",
+                    dataAprovacaoCliente: null,
+                    dataReprovacaoCliente: dataReprovacao,
+                    motivoReprovacaoCliente: motivo,
+                    status: "Reprovado",
+                    concluidaEm: null,
+                    protocolo: protocoloOriginal
+                }
+            );
+
+            navigate(
+                `/solicitacoes/nova?origemSolicitacao=${encodeURIComponent(id)}&origemProtocolo=${encodeURIComponent(protocoloOriginal)}&motivoReprovacao=${encodeURIComponent(motivo)}`
+            );
+
+        }
+        catch (erro) {
+            console.error(
+                "Erro ao persistir a reprovação antes de abrir a correção:",
+                erro
+            );
+
+            alert(
+                erro?.message ||
+                "Não foi possível registrar a reprovação antes de abrir a correção."
+            );
+        }
+
+    }
+
+
     /* ============================
        EDITAR CORREÇÃO
        SOMENTE ADMIN / FLUXO
@@ -396,7 +549,24 @@ function DetalheSolicitacao() {
 
     function editarCorrecao() {
 
-        if (ehUsuarioUT) {
+        if (
+            !ehUsuarioUT &&
+            !ehAdministrador
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            dados?.status !==
+            "Correção Solicitada"
+        ) {
+
+            alert(
+                "Esta solicitação não está aguardando correção."
+            );
 
             return;
 
@@ -603,6 +773,16 @@ function DetalheSolicitacao() {
                 }
 
 
+                cadastroAdministrativoPrimeiraSolicitacao={
+                    dados.cadastroAdministrativoPrimeiraSolicitacao === true
+                }
+
+
+                cadastroAdministrativoAlteradoNestaSolicitacao={
+                    dados.cadastroAdministrativoAlteradoNestaSolicitacao === true
+                }
+
+
                 tipoSolicitacao={
                     dados.tipoSolicitacao
                 }
@@ -689,6 +869,18 @@ function DetalheSolicitacao() {
                 }
 
 
+                motivoDevolucao={
+                    dados.motivoDevolucao
+                    ||
+                    ""
+                }
+
+
+                totalDevolucoes={
+                    dados.totalDevolucoes
+                }
+
+
                 etapaWorkflow={
 
                     dados.etapaWorkflow
@@ -756,10 +948,36 @@ function DetalheSolicitacao() {
 
                 onEditarCorrecao={
 
-                    ehAdministrador
+                    (
+                        ehAdministrador ||
+                        ehUsuarioUT
+                    ) &&
+                    dados?.status ===
+                    "Correção Solicitada"
                         ? editarCorrecao
                         : null
 
+                }
+
+                dadosSolicitacaoCompleta={
+                    dados
+                }
+
+                onSalvarAcompanhamentoCliente={
+                    salvarAcompanhamentoCliente
+                }
+
+                onConcluirAcompanhamentoCliente={
+                    concluirAcompanhamentoClienteFluxo
+                }
+
+                onAvancarParaCorrecao={
+                    avancarParaCorrecao
+                }
+
+                onAbrirRelacionada={
+                    (solicitacaoRelacionadaId) =>
+                        navigate(`/solicitacoes/${solicitacaoRelacionadaId}`)
                 }
 
             />

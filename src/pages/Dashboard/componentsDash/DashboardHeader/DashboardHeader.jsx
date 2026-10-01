@@ -1,66 +1,91 @@
+import { useNavigate } from "react-router-dom";
 import "./DashboardHeader.css";
 
 function DashboardHeader({
 
-    usuario="Leilane",
+    usuario = "Leilane",
 
-    notificacoes=[],
+    notificacoes = [],
 
     atualizar,
 
-    atualizando=false
+    atualizando = false
 
-}){
+}) {
 
-    const hoje=new Date();
+    const navigate = useNavigate();
 
-    const hora=hoje.getHours();
+    const hoje = new Date();
+    const hora = hoje.getHours();
 
-    let saudacao="Olá";
+    let saudacao = "Olá";
 
-    if(hora<12){
+    if (hora < 12) {
 
-        saudacao="Bom dia";
+        saudacao = "Bom dia";
 
-    }else if(hora<18){
+    } else if (hora < 18) {
 
-        saudacao="Boa tarde";
+        saudacao = "Boa tarde";
 
-    }else{
+    } else {
 
-        saudacao="Boa noite";
+        saudacao = "Boa noite";
 
     }
 
-    const data=hoje.toLocaleDateString(
-
+    const data = hoje.toLocaleDateString(
         "pt-BR",
-
         {
-
-            weekday:"long",
-
-            day:"2-digit",
-
-            month:"long",
-
-            year:"numeric"
-
+            weekday: "long",
+            day: "2-digit",
+            month: "long",
+            year: "numeric"
         }
-
     );
 
-    const totalNotificacoes=notificacoes.length;
+    const totalNotificacoes = notificacoes.length;
+    const naoLidas = notificacoes.filter((notificacao) => !notificacao.lida).length;
 
-    const possuiCritica=
+    const possuiCritica = notificacoes.some((notificacao) => {
 
-        notificacoes.some(
+        if (notificacao.lida) {
+            return false;
+        }
 
-            n=>n.tipo==="critico"
+        const texto = `${notificacao.titulo || ""} ${notificacao.mensagem || ""}`.toLowerCase();
 
+        return (
+            notificacao.tipo === "critico" ||
+            /crit|pendencia|pendências|devolv|correção|correcao|revisao|revisão|aguard/i.test(texto)
         );
 
-    return(
+    });
+
+    function abrirNotificacoes() {
+        navigate("/notificacoes");
+    }
+
+    function abrirPendenciasCriticas() {
+
+        if (!possuiCritica) {
+            return;
+        }
+
+        navigate("/notificacoes?filtro=nao-lidas");
+
+    }
+
+    function executarTecla(evento, funcao) {
+
+        if (evento.key === "Enter" || evento.key === " ") {
+            evento.preventDefault();
+            funcao();
+        }
+
+    }
+
+    return (
 
         <div className="dashboardHeader">
 
@@ -83,28 +108,12 @@ function DashboardHeader({
                 </div>
 
                 <button
-
                     className="botaoAtualizar"
-
                     onClick={atualizar}
-
                     disabled={atualizando}
-
                 >
 
-                    {
-
-                        atualizando
-
-                        ?
-
-                        "Atualizando..."
-
-                        :
-
-                        "Atualizar"
-
-                    }
+                    {atualizando ? "Atualizando..." : "Atualizar"}
 
                 </button>
 
@@ -112,7 +121,13 @@ function DashboardHeader({
 
             <div className="dashboardResumo">
 
-                <div className="resumoCard">
+                <div
+                    className={`resumoCard resumoCardAcionavel ${possuiCritica ? "resumoCardCritico" : ""}`}
+                    onClick={possuiCritica ? abrirPendenciasCriticas : undefined}
+                    onKeyDown={(evento) => executarTecla(evento, abrirPendenciasCriticas)}
+                    role={possuiCritica ? "button" : undefined}
+                    tabIndex={possuiCritica ? 0 : undefined}
+                >
 
                     <span>
 
@@ -122,25 +137,21 @@ function DashboardHeader({
 
                     <small>
 
-                        {
-
-                            possuiCritica
-
-                            ?
-
-                            "Existem pendências críticas."
-
-                            :
-
-                            "Nenhuma pendência crítica."
-
-                        }
+                        {possuiCritica
+                            ? "Existem pendências críticas."
+                            : "Nenhuma pendência crítica."}
 
                     </small>
 
                 </div>
 
-                <div className="resumoCard">
+                <div
+                    className="resumoCard resumoCardAcionavel"
+                    onClick={abrirNotificacoes}
+                    onKeyDown={(evento) => executarTecla(evento, abrirNotificacoes)}
+                    role="button"
+                    tabIndex={0}
+                >
 
                     <span>
 
@@ -150,21 +161,17 @@ function DashboardHeader({
 
                     <small>
 
-                        {
-
-                            totalNotificacoes===0
-
-                            ?
-
-                            "Você não possui notificações."
-
-                            :
-
-                            `Você possui ${totalNotificacoes} notificação(ões).`
-
-                        }
+                        {totalNotificacoes === 0
+                            ? "Você não possui notificações."
+                            : `Você possui ${totalNotificacoes} notificação(ões).`}
 
                     </small>
+
+                    {naoLidas > 0 && (
+                        <span className="badgeResumoCard">
+                            {naoLidas}
+                        </span>
+                    )}
 
                 </div>
 

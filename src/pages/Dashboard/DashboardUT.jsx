@@ -212,18 +212,8 @@ function DashboardUT() {
 
     function abrirNotificacoes() {
 
-        /*
-        A tela específica de notificações
-        ainda não foi criada.
-
-        Por enquanto direcionamos para
-        Minhas Solicitações, onde a UT
-        consegue acompanhar pendências
-        e status.
-        */
-
         navigate(
-            "/solicitacoes"
+            "/notificacoes"
         );
 
     }

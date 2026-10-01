@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./NovaSolicitacao.css";
 
@@ -22,8 +22,13 @@ import {
     serverTimestamp,
     doc,
     getDoc,
-    runTransaction
+    runTransaction,
+    updateDoc
 } from "firebase/firestore";
+
+import {
+    useSearchParams
+} from "react-router-dom";
 
 import {
     auth,
@@ -36,6 +41,27 @@ import {
 
 
 function Solicitacoes() {
+
+    const [searchParams] = useSearchParams();
+
+    const origemSolicitacaoId = searchParams.get("origemSolicitacao") || "";
+    const origemProtocolo = searchParams.get("origemProtocolo") || "";
+    const motivoReprovacaoOrigem = searchParams.get("motivoReprovacao") || "";
+    const origemReprovacaoCliente = Boolean(origemSolicitacaoId);
+
+    useEffect(() => {
+        if (origemReprovacaoCliente) {
+            setTipoSolicitacao("Correção");
+            setDocumentosGerados([]);
+            setDadosSolicitacao((estadoAnterior) => ({
+                ...estadoAnterior,
+                motivo: "Erro identificado pelo cliente",
+                descricao: motivoReprovacaoOrigem
+                    ? `Correção originada da reprovação do cliente. Motivo: ${motivoReprovacaoOrigem}`
+                    : "Correção originada da reprovação do cliente."
+            }));
+        }
+    }, [origemReprovacaoCliente, motivoReprovacaoOrigem]);
 
 
     // =====================================
@@ -572,7 +598,32 @@ function Solicitacoes() {
                         // CADASTRO ADMINISTRATIVO
                         // =====================================
 
-                        dadosCadastro
+                        dadosCadastro,
+
+                        cadastroAdministrativoPrimeiraSolicitacao:
+                            !cadastroAdministrativo,
+
+                        cadastroAdministrativoAlteradoNestaSolicitacao:
+                            !!cadastroAdministrativo &&
+                            houveAlteracaoCadastro === "sim",
+
+                        solicitacaoOriginalId:
+                            origemSolicitacaoId || "",
+
+                        solicitacaoOriginalProtocolo:
+                            origemProtocolo || "",
+
+                        origemSolicitacaoTipo:
+                            origemReprovacaoCliente ? "reprovacaoCliente" : "",
+
+                        motivoReprovacaoCliente:
+                            motivoReprovacaoOrigem || "",
+
+                        alteracaoCadastroOrigem:
+                            houveAlteracaoCadastro === "sim",
+
+                        modalidadeOrigem:
+                            "Correção"
 
                     }
 
@@ -583,6 +634,25 @@ function Solicitacoes() {
                 "Solicitação salva:",
                 solicitacaoRef.id
             );
+
+
+            if (origemSolicitacaoId) {
+                await updateDoc(
+                    doc(
+                        db,
+                        "Solicitacoes",
+                        origemSolicitacaoId
+                    ),
+                    {
+                        correcaoRelacionadaId:
+                            solicitacaoRef.id,
+                        correcaoRelacionadaProtocolo:
+                            protocoloGerado,
+                        correcaoRelacionadaEm:
+                            serverTimestamp()
+                    }
+                );
+            }
 
 
             // =====================================
@@ -783,6 +853,10 @@ function Solicitacoes() {
 
                             setEtapa={
                                 setEtapa
+                            }
+
+                            forcarTipoSolicitacao={
+                                origemReprovacaoCliente
                             }
 
                         />
@@ -1148,6 +1222,22 @@ function Solicitacoes() {
 
                         onEnviar={
                             onEnviar
+                        }
+
+                        solicitacaoOriginalId={
+                            origemSolicitacaoId
+                        }
+
+                        solicitacaoOriginalProtocolo={
+                            origemProtocolo
+                        }
+
+                        motivoReprovacaoCliente={
+                            motivoReprovacaoOrigem
+                        }
+
+                        alteracaoCadastroOrigem={
+                            houveAlteracaoCadastro === "sim"
                         }
 
                     />

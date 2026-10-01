@@ -25,7 +25,9 @@ export async function criarNotificacao({
     protocolo = "",
     titulo = "",
     mensagem = "",
-    tipo = "geral"
+    tipo = "geral",
+    rota = "",
+    eventoId = ""
 }) {
 
     if (!destinatarioUid) {
@@ -35,6 +37,50 @@ export async function criarNotificacao({
         );
 
         return;
+
+    }
+
+    if (
+        solicitacaoId &&
+        eventoId
+    ) {
+
+        const referencia =
+            collection(
+                db,
+                "Notificacoes"
+            );
+
+        const consulta =
+            query(
+                referencia,
+                where(
+                    "destinatarioUid",
+                    "==",
+                    destinatarioUid
+                ),
+                where(
+                    "solicitacaoId",
+                    "==",
+                    solicitacaoId
+                ),
+                where(
+                    "eventoId",
+                    "==",
+                    eventoId
+                )
+            );
+
+        const snapshot =
+            await getDocs(
+                consulta
+            );
+
+        if (
+            !snapshot.empty
+        ) {
+            return;
+        }
 
     }
 
@@ -57,6 +103,10 @@ export async function criarNotificacao({
             mensagem,
 
             tipo,
+
+            rota,
+
+            eventoId,
 
             lida: false,
 
@@ -252,7 +302,10 @@ export async function marcarTodasComoLidas(
 // BUSCAR USUÁRIOS ADMINISTRADORES
 // ======================================================
 
-export async function buscarAdministradores() {
+export async function buscarUsuariosPorPerfil(
+    perfil,
+    numeroUT = ""
+) {
 
     const referencia =
         collection(
@@ -260,16 +313,32 @@ export async function buscarAdministradores() {
             "Usuarios"
         );
 
-
-    const consulta =
+    const consultaBase =
         query(
             referencia,
             where(
                 "perfil",
                 "==",
-                "ADMIN"
+                perfil
             )
         );
+
+    const consulta =
+        numeroUT
+            ? query(
+                referencia,
+                where(
+                    "perfil",
+                    "==",
+                    perfil
+                ),
+                where(
+                    "numeroUT",
+                    "==",
+                    String(numeroUT)
+                )
+            )
+            : consultaBase;
 
 
     const snapshot =
@@ -292,6 +361,80 @@ export async function buscarAdministradores() {
 }
 
 
+export async function buscarAdministradores() {
+
+    return buscarUsuariosPorPerfil(
+        "ADMIN"
+    );
+
+}
+
+
+export async function notificarUTsDaSolicitacao({
+    solicitacaoId = "",
+    protocolo = "",
+    titulo = "",
+    mensagem = "",
+    tipo = "solicitacao",
+    utNumero = "",
+    eventoId = ""
+}) {
+
+    const numeroUT =
+        String(utNumero || "").trim();
+
+    const usuariosUT =
+        numeroUT
+            ? await buscarUsuariosPorPerfil(
+                "UT",
+                numeroUT
+            )
+            : await buscarUsuariosPorPerfil(
+                "UT"
+            );
+
+    if (
+        usuariosUT.length === 0
+    ) {
+        return;
+    }
+
+    const eventoFinal =
+        eventoId ||
+        `solicitacao:${solicitacaoId || "global"}:titulo:${String(titulo || "movimentacao").trim()}`;
+
+    await Promise.all(
+
+        usuariosUT.map(
+            (usuario) =>
+
+                criarNotificacao({
+
+                    destinatarioUid:
+                        usuario.uid,
+
+                    solicitacaoId,
+
+                    protocolo,
+
+                    titulo,
+
+                    mensagem,
+
+                    tipo,
+
+                    eventoId:
+                        eventoFinal
+
+                })
+
+        )
+
+    );
+
+}
+
+
 // ======================================================
 // NOTIFICAR TODOS OS ADMINISTRADORES
 // ======================================================
@@ -306,7 +449,8 @@ export async function notificarAdministradores({
 
     mensagem = "",
 
-    tipo = "solicitacao"
+    tipo = "solicitacao",
+    eventoId = ""
 
 }) {
 
@@ -325,6 +469,10 @@ export async function notificarAdministradores({
         return;
 
     }
+
+    const eventoFinal =
+        eventoId ||
+        `solicitacao:${solicitacaoId || "global"}:titulo:${String(titulo || "movimentacao").trim()}`;
 
 
     await Promise.all(
@@ -345,7 +493,10 @@ export async function notificarAdministradores({
 
                     mensagem,
 
-                    tipo
+                    tipo,
+
+                    eventoId:
+                        eventoFinal
 
                 })
 

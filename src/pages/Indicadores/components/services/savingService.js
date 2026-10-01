@@ -344,12 +344,23 @@ const nomesMeses = [
    CALCULAR SAVING
 ===================================================== */
 
-export async function calcularSaving() {
+export async function calcularSaving(filtros = {}) {
 
+    const ano = Number(filtros.ano || 2026);
+    const mes = String(filtros.mes || "").trim();
+    const utFiltro = String(filtros.ut || "all").trim();
+    const modalidadeFiltro = String(filtros.modalidade || "all").trim();
+    const statusFiltro = String(filtros.status || "all").trim();
+    const dataInicioFiltro = filtros.dataInicio ? new Date(filtros.dataInicio) : null;
+    const dataFimFiltro = filtros.dataFim ? new Date(filtros.dataFim) : null;
 
-    /* =================================================
-       BUSCA SOLICITAÇÕES
-    ================================================= */
+    if (dataInicioFiltro) {
+        dataInicioFiltro.setHours(0, 0, 0, 0);
+    }
+
+    if (dataFimFiltro) {
+        dataFimFiltro.setHours(23, 59, 59, 999);
+    }
 
     const snapshot = await getDocs(
 
@@ -363,141 +374,64 @@ export async function calcularSaving() {
 
     );
 
-
     const solicitacoes = [];
-
 
     snapshot.forEach((doc) => {
 
         const dados = doc.data();
 
+        const criadoEm = dados.criadoEm?.toDate?.() ?? (dados.criadoEm ? new Date(dados.criadoEm) : null);
 
-        const criadoEm =
+        const tipoSolicitacao = String(dados.tipoSolicitacao || dados.revisaoAnual?.tipoSolicitacao || "").trim();
+        const statusAtual = String(dados.status || dados.revisaoAnual?.status || "").trim();
+        const numeroUT = String(dados.dadosCadastro?.numeroUT || dados.ut || dados.numeroUT || "").trim();
 
-            dados.criadoEm?.toDate?.();
+        if (!criadoEm) return;
 
+        if (dataInicioFiltro && criadoEm < dataInicioFiltro) return;
+        if (dataFimFiltro && criadoEm > dataFimFiltro) return;
 
-        if(!criadoEm) return;
+        if (ano && criadoEm.getFullYear() !== ano) return;
+        if (mes && criadoEm.getMonth() !== Number(mes) - 1) return;
 
+        if (utFiltro !== "all" && numeroUT !== utFiltro) return;
 
-        const documentosGerados =
-
-            dados.documentosGerados || [];
-
-
-        const documentos =
-
-            dados.documentos || {};
-
-
-        const modalidade =
-
-            identificarModalidade(dados);
-
-
-        if(!modalidade) return;
-
-
-        const cliente =
-
-            dados.cliente ||
-
-            dados.dadosCadastro?.cliente ||
-
-            "";
-
-
-        const altaComplexidade =
-
-            ehAltaComplexidade(dados);
-
-
-        const pesoBase =
-
-            PESOS[modalidade];
-
-
-        const pesoInterno =
-
-            altaComplexidade
-
-                ? pesoBase *
-
-                  MULTIPLICADOR_COMPLEXIDADE
-
-                : pesoBase;
-
-
-        /* =============================================
-           DOCUMENTOS
-        ============================================= */
-
-
-        const temPGR =
-
-            documentosGerados.some(
-
-                item =>
-
-                    normalizarTexto(item) ===
-
-                    "pgr"
-
-            ) ||
-
-            (documentos.pgr?.length || 0) > 0;
-
-
-        const temPCMSO =
-
-            documentosGerados.some(
-
-                item =>
-
-                    normalizarTexto(item) ===
-
-                    "pcmso"
-
-            ) ||
-
-            (documentos.pcmso?.length || 0) > 0;
-
-
-        if(!temPGR && !temPCMSO) {
-
-            return;
-
+        if (modalidadeFiltro !== "all" && tipoSolicitacao !== modalidadeFiltro) {
+            const modalidadeAtual = identificarModalidade(dados);
+            if (modalidadeAtual !== modalidadeFiltro) return;
         }
 
+        if (statusFiltro !== "all" && statusAtual !== statusFiltro) return;
+
+        const documentosGerados = dados.documentosGerados || [];
+        const documentos = dados.documentos || {};
+        const modalidade = identificarModalidade(dados);
+
+        if (!modalidade) return;
+
+        const cliente = dados.cliente || dados.dadosCadastro?.cliente || "";
+        const altaComplexidade = ehAltaComplexidade(dados);
+        const pesoBase = PESOS[modalidade];
+        const pesoInterno = altaComplexidade ? pesoBase * MULTIPLICADOR_COMPLEXIDADE : pesoBase;
+
+        const temPGR = documentosGerados.some(item => normalizarTexto(item) === "pgr") || (documentos.pgr?.length || 0) > 0;
+        const temPCMSO = documentosGerados.some(item => normalizarTexto(item) === "pcmso") || (documentos.pcmso?.length || 0) > 0;
+
+        if (!temPGR && !temPCMSO) {
+            return;
+        }
 
         solicitacoes.push({
-
             dados,
-
             criadoEm,
-
-            mes:
-
-                nomesMeses[
-
-                    criadoEm.getMonth()
-
-                ],
-
+            mes: nomesMeses[criadoEm.getMonth()],
             modalidade,
-
             pesoBase,
-
             pesoInterno,
-
             cliente,
-
             altaComplexidade,
-
             temPGR,
-
             temPCMSO
-
         });
 
     });

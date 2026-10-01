@@ -18,7 +18,7 @@ import {
 } from "recharts";
 
 
-function GraficoSaving() {
+function GraficoSaving({ filtros = {} }) {
 
     const [resumo, setResumo] = useState({
 
@@ -55,7 +55,7 @@ function GraficoSaving() {
                 setLoading(true);
 
                 const dados =
-                    await calcularSaving();
+                    await calcularSaving(filtros);
 
                 setResumo(dados);
 
@@ -77,7 +77,15 @@ function GraficoSaving() {
 
         carregarSaving();
 
-    }, []);
+    }, [
+        filtros.ano,
+        filtros.mes,
+        filtros.dataInicio,
+        filtros.dataFim,
+        filtros.ut,
+        filtros.modalidade,
+        filtros.status
+    ]);
 
 
     /* ===========================

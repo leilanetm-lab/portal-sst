@@ -23,7 +23,9 @@ function AlteracaoCadastro({
 
     setDadosCadastro,
 
-    setEtapa
+    setEtapa,
+
+    forcarTipoSolicitacao = false
 
 }) {
 
@@ -419,7 +421,11 @@ function AlteracaoCadastro({
                 houveAlteracaoCadastro === "nao"
             ) {
 
-                setEtapa(2);
+                setEtapa(
+                    forcarTipoSolicitacao
+                        ? 3
+                        : 2
+                );
 
                 return;
 
@@ -488,7 +494,11 @@ function AlteracaoCadastro({
                 );
 
 
-                setEtapa(2);
+                setEtapa(
+                    forcarTipoSolicitacao
+                        ? 3
+                        : 2
+                );
 
                 return;
 
@@ -538,7 +548,11 @@ function AlteracaoCadastro({
             );
 
 
-            setEtapa(2);
+            setEtapa(
+                forcarTipoSolicitacao
+                    ? 3
+                    : 2
+            );
 
             return;
 

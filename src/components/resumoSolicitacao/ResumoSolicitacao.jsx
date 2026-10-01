@@ -41,7 +41,15 @@ function ResumoSolicitacao({
 
     onEnviar,
 
-    enviando
+    enviando,
+
+    solicitacaoOriginalId = "",
+
+    solicitacaoOriginalProtocolo = "",
+
+    motivoReprovacaoCliente = "",
+
+    alteracaoCadastroOrigem = false
 
 }){
 
@@ -231,6 +239,38 @@ function ResumoSolicitacao({
 
             </header>
 
+
+            {
+                solicitacaoOriginalId && (
+                    <section className="secaoResumo" style={{ marginTop: 20 }}>
+                        <div className="tituloSecao" style={{ color: "#b3261e" }}>
+                            🔴 Correção originada de reprovação do cliente
+                        </div>
+
+                        <div className="fichaTecnica">
+                            <div>
+                                <span>Solicitação original</span>
+                                <strong>{solicitacaoOriginalProtocolo || solicitacaoOriginalId || "-"}</strong>
+                            </div>
+
+                            <div className="campoGrande">
+                                <span>Motivo da reprovação</span>
+                                <strong>{motivoReprovacaoCliente || "-"}</strong>
+                            </div>
+
+                            <div>
+                                <span>Modalidade</span>
+                                <strong>Correção</strong>
+                            </div>
+
+                            <div>
+                                <span>Alteração no Cadastro Administrativo</span>
+                                <strong>{alteracaoCadastroOrigem ? "Sim" : "Não"}</strong>
+                            </div>
+                        </div>
+                    </section>
+                )
+            }
 
             <section className="barraInformacoes">
 

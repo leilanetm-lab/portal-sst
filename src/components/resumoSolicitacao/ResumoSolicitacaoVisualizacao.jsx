@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+
 import "./ResumoSolicitacao.css";
 
 import TimelineWorkflow from "../workflow/TimelineWorkflow";
@@ -19,6 +21,10 @@ function ResumoSolicitacaoVisualizacao({
 
     dadosCadastro,
 
+    cadastroAdministrativoPrimeiraSolicitacao = false,
+
+    cadastroAdministrativoAlteradoNestaSolicitacao = false,
+
     tipoSolicitacao,
 
     documentosGerados,
@@ -37,6 +43,10 @@ function ResumoSolicitacaoVisualizacao({
 
     statusSolicitacao,
 
+    motivoDevolucao,
+
+    totalDevolucoes,
+
     etapaWorkflow,
 
     onDarAceite,
@@ -49,7 +59,17 @@ function ResumoSolicitacaoVisualizacao({
 
     ehUsuarioUT = false,
 
-    ehAdministrador = false
+    ehAdministrador = false,
+
+    dadosSolicitacaoCompleta = null,
+
+    onSalvarAcompanhamentoCliente = null,
+
+    onConcluirAcompanhamentoCliente = null,
+
+    onAvancarParaCorrecao = null,
+
+    onAbrirRelacionada = null
 
 }) {
 
@@ -212,9 +232,11 @@ function ResumoSolicitacaoVisualizacao({
 
     const alteracoesCadastro =
 
-        Object.keys(
-            dadosCadastro || {}
-        )
+        cadastroAdministrativoPrimeiraSolicitacao
+            ? []
+            : Object.keys(
+                dadosCadastro || {}
+            )
 
             .filter((campo) => {
 
@@ -288,6 +310,16 @@ function ResumoSolicitacaoVisualizacao({
         "Correção Solicitada";
 
 
+    const motivoAtualDevolucao =
+        motivoDevolucao ||
+        "-";
+
+
+    const mostrarCadastroAdministrativoCompleto =
+        cadastroAdministrativoPrimeiraSolicitacao ||
+        cadastroAdministrativoAlteradoNestaSolicitacao;
+
+
     /*
     =====================================
     IMPORTANTE
@@ -301,6 +333,303 @@ function ResumoSolicitacaoVisualizacao({
         ehAdministrador &&
         !ehUsuarioUT;
 
+
+    const podeEditarCorrecaoUT =
+        ehUsuarioUT &&
+        statusSolicitacao ===
+        "Correção Solicitada";
+
+    const documentoPGRDisponibilizado =
+        Array.isArray(
+            dadosSolicitacaoCompleta?.documentos?.pgr
+        ) &&
+        dadosSolicitacaoCompleta.documentos.pgr.length > 0;
+
+    const documentoPCMSODisponibilizado =
+        Array.isArray(
+            dadosSolicitacaoCompleta?.documentos?.pcmso
+        ) &&
+        dadosSolicitacaoCompleta.documentos.pcmso.length > 0;
+
+    const possuiDocumentoPublicado =
+        documentoPGRDisponibilizado &&
+        documentoPCMSODisponibilizado;
+
+    const [acompanhamentoCliente, setAcompanhamentoCliente] = useState({
+        clienteExigePostagem: null,
+        dataPostagemCliente: "",
+        dataAguardandoRetorno: "",
+        statusAprovacaoCliente: "",
+        dataAprovacaoCliente: "",
+        dataReprovacaoCliente: "",
+        motivoReprovacaoCliente: ""
+    });
+
+    useEffect(() => {
+
+        const clienteExigePostagem =
+            dadosSolicitacaoCompleta?.clienteExigePostagem;
+
+        const dataRespostaPostagem =
+            dadosSolicitacaoCompleta?.dataRespostaPostagem;
+
+        const dataPostagemCliente =
+            dadosSolicitacaoCompleta?.dataPostagemCliente;
+
+        const dataAguardandoRetorno =
+            dadosSolicitacaoCompleta?.dataAguardandoRetorno;
+
+        const statusAprovacaoCliente =
+            dadosSolicitacaoCompleta?.statusAprovacaoCliente || "";
+
+        const dataAprovacaoCliente =
+            dadosSolicitacaoCompleta?.dataAprovacaoCliente;
+
+        const dataReprovacaoCliente =
+            dadosSolicitacaoCompleta?.dataReprovacaoCliente;
+
+        const motivoReprovacaoCliente =
+            dadosSolicitacaoCompleta?.motivoReprovacaoCliente || "";
+
+        setAcompanhamentoCliente({
+            clienteExigePostagem:
+                clienteExigePostagem === undefined || clienteExigePostagem === null
+                    ? null
+                    : Boolean(clienteExigePostagem),
+            dataRespostaPostagem:
+                dataRespostaPostagem
+                    ? formatarDataInput(dataRespostaPostagem)
+                    : "",
+            dataPostagemCliente:
+                dataPostagemCliente
+                    ? formatarDataInput(dataPostagemCliente)
+                    : "",
+            dataAguardandoRetorno:
+                dataAguardandoRetorno
+                    ? formatarDataInput(dataAguardandoRetorno)
+                    : "",
+            statusAprovacaoCliente,
+            dataAprovacaoCliente:
+                dataAprovacaoCliente
+                    ? formatarDataInput(dataAprovacaoCliente)
+                    : "",
+            dataReprovacaoCliente:
+                dataReprovacaoCliente
+                    ? formatarDataInput(dataReprovacaoCliente)
+                    : "",
+            motivoReprovacaoCliente
+        });
+
+    }, [dadosSolicitacaoCompleta]);
+
+    function formatarDataInput(valor) {
+
+        if (!valor) {
+            return "";
+        }
+
+        if (typeof valor === "string") {
+            return valor.slice(0, 10);
+        }
+
+        if (valor?.toDate) {
+            const data = valor.toDate();
+            return data.toISOString().slice(0, 10);
+        }
+
+        const data = new Date(valor);
+
+        if (Number.isNaN(data.getTime())) {
+            return "";
+        }
+
+        return data.toISOString().slice(0, 10);
+
+    }
+
+    function formatarDataBrasileira(valor) {
+
+        if (!valor) {
+            return "";
+        }
+
+        const data =
+            valor?.toDate
+                ? valor.toDate()
+                : new Date(valor);
+
+        if (Number.isNaN(data.getTime())) {
+            return "";
+        }
+
+        return new Intl.DateTimeFormat("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        }).format(data);
+
+    }
+
+    const solicitacaoRelacionadaId =
+        dadosSolicitacaoCompleta?.correcaoRelacionadaId ||
+        dadosSolicitacaoCompleta?.solicitacaoOriginalId ||
+        "";
+
+    const solicitacaoRelacionadaProtocolo =
+        dadosSolicitacaoCompleta?.correcaoRelacionadaProtocolo ||
+        dadosSolicitacaoCompleta?.solicitacaoOriginalProtocolo ||
+        "";
+
+    const mostrarBlocoAcompanhamento =
+        possuiDocumentoPublicado &&
+        (
+            statusSolicitacao !== "Correção Solicitada" &&
+            statusSolicitacao !== "Em Análise Técnica"
+        );
+
+    const statusAprovacaoClientePersistido =
+        String(dadosSolicitacaoCompleta?.statusAprovacaoCliente || "")
+            .trim()
+            .toLowerCase();
+
+    const statusAprovacaoClienteNormalizado =
+        String(acompanhamentoCliente.statusAprovacaoCliente || statusAprovacaoClientePersistido || "")
+            .trim()
+            .toLowerCase();
+
+    const motivoReprovacaoClientePersistido =
+        String(
+            acompanhamentoCliente.motivoReprovacaoCliente ||
+            dadosSolicitacaoCompleta?.motivoReprovacaoCliente ||
+            ""
+        ).trim();
+
+    const dataReprovacaoClientePersistida =
+        dadosSolicitacaoCompleta?.dataReprovacaoCliente ||
+        acompanhamentoCliente.dataReprovacaoCliente ||
+        "";
+
+    const possuiCorrecaoRelacionada = Boolean(
+        dadosSolicitacaoCompleta?.correcaoRelacionadaId ||
+        dadosSolicitacaoCompleta?.correcaoRelacionadaProtocolo
+    );
+
+    const cicloOriginalEncerradoPorReprovacao =
+        possuiCorrecaoRelacionada;
+
+    const clienteAprovouDocumento =
+        !cicloOriginalEncerradoPorReprovacao &&
+        statusAprovacaoClienteNormalizado === "aprovado" &&
+        Boolean(acompanhamentoCliente.dataAprovacaoCliente);
+
+    const solicitacaoConcluida =
+        !cicloOriginalEncerradoPorReprovacao &&
+        (
+            Boolean(dadosSolicitacaoCompleta?.concluidaEm) ||
+            (
+                statusAprovacaoClienteNormalizado === "aprovado" &&
+                Boolean(dadosSolicitacaoCompleta?.dataAprovacaoCliente)
+            )
+        );
+
+    const mostrarCampoDataPostagem =
+        acompanhamentoCliente.clienteExigePostagem === true && !solicitacaoConcluida;
+
+    const mostrarStatusAprovacao =
+        mostrarCampoDataPostagem &&
+        acompanhamentoCliente.dataPostagemCliente;
+
+    const mostrarCampoDataAprovacao =
+        acompanhamentoCliente.statusAprovacaoCliente === "aprovado" && !solicitacaoConcluida;
+
+    const mostrarCampoMotivoReprovacao =
+        acompanhamentoCliente.statusAprovacaoCliente === "reprovado" && !solicitacaoConcluida;
+
+    const acompanhamentoClienteSomenteLeitura =
+        possuiCorrecaoRelacionada;
+
+    const podeEditarAcompanhamentoCliente =
+        !solicitacaoConcluida &&
+        !acompanhamentoClienteSomenteLeitura;
+
+    const deveSalvarAcompanhamento =
+        podeEditarAcompanhamentoCliente &&
+        (
+            acompanhamentoCliente.statusAprovacaoCliente === "aguardando" ||
+            acompanhamentoCliente.statusAprovacaoCliente === "reprovado"
+        );
+
+    const deveConcluirSolicitacao =
+        !solicitacaoConcluida &&
+        acompanhamentoCliente.statusAprovacaoCliente === "aprovado" &&
+        Boolean(acompanhamentoCliente.dataAprovacaoCliente) &&
+        !acompanhamentoClienteSomenteLeitura;
+
+    const textoStatusAvaliacao = useMemo(() => {
+
+        const status =
+            statusAprovacaoClienteNormalizado;
+
+        if (status === "aguardando") {
+            return "⏳ Aguardando aprovação do cliente";
+        }
+
+        if (status === "aprovado" && Boolean(acompanhamentoCliente.dataAprovacaoCliente)) {
+            return "✅ Documento aprovado pelo cliente";
+        }
+
+        if (status === "reprovado") {
+            return "🔴 Documento reprovado pelo cliente";
+        }
+
+        return "";
+
+    }, [statusAprovacaoClienteNormalizado, acompanhamentoCliente.dataAprovacaoCliente]);
+
+    async function salvarAcompanhamento(evento) {
+
+        evento.preventDefault();
+
+        if (solicitacaoConcluida || acompanhamentoClienteSomenteLeitura) {
+            return;
+        }
+
+        if (acompanhamentoCliente.statusAprovacaoCliente === "reprovado") {
+            const motivo = String(acompanhamentoCliente.motivoReprovacaoCliente || "").trim();
+
+            if (!motivo) {
+                alert("Descreva o motivo da reprovação do cliente antes de salvar.");
+                return;
+            }
+        }
+
+        if (!onSalvarAcompanhamentoCliente) {
+            return;
+        }
+
+        await onSalvarAcompanhamentoCliente({
+            ...acompanhamentoCliente,
+            clienteExigePostagem:
+                acompanhamentoCliente.clienteExigePostagem
+        });
+
+    }
+
+    async function concluirSolicitacao(evento) {
+
+        evento.preventDefault();
+
+        if (acompanhamentoClienteSomenteLeitura || !onConcluirAcompanhamentoCliente) {
+            return;
+        }
+
+        await onConcluirAcompanhamentoCliente({
+            ...acompanhamentoCliente,
+            clienteExigePostagem:
+                acompanhamentoCliente.clienteExigePostagem
+        });
+
+    }
 
     return (
 
@@ -361,6 +690,37 @@ function ResumoSolicitacaoVisualizacao({
                 BARRA DE INFORMAÇÕES
             ===================================== */}
 
+            {
+                solicitacaoRelacionadaId && (
+                    <section className="secaoResumo" style={{ marginTop: 20 }}>
+                        <div className="tituloSecao">
+                            🔗 Solicitação relacionada
+                        </div>
+
+                        <div className="fichaTecnica">
+                            <div>
+                                <span>Solicitação vinculada</span>
+                                <strong>{solicitacaoRelacionadaProtocolo || solicitacaoRelacionadaId}</strong>
+                            </div>
+
+                            <div>
+                                <span>Ação</span>
+                                <strong>
+                                    <button
+                                        type="button"
+                                        className="salvar"
+                                        onClick={() => onAbrirRelacionada && onAbrirRelacionada(solicitacaoRelacionadaId)}
+                                        style={{ marginTop: 0 }}
+                                    >
+                                        Abrir solicitação relacionada
+                                    </button>
+                                </strong>
+                            </div>
+                        </div>
+                    </section>
+                )
+            }
+
             <section className="barraInformacoes">
 
                 <div>
@@ -420,6 +780,89 @@ function ResumoSolicitacaoVisualizacao({
                 </div>
 
             </section>
+
+
+            {/* =====================================
+                CORREÇÃO SOLICITADA
+            ===================================== */}
+
+            {
+                mostrarEditarCorrecao && (
+
+                    <section className="alertaCorrecaoCard">
+
+                        <div className="alertaCorrecaoHeader">
+
+                            <div className="alertaCorrecaoTituloWrap">
+
+                                <span className="alertaCorrecaoIcone">
+                                    ⚠️
+                                </span>
+
+                                <div>
+
+                                    <h3>
+                                        CORREÇÃO SOLICITADA
+                                    </h3>
+
+                                    {
+                                        Number(
+                                            totalDevolucoes
+                                        ) > 0 && (
+
+                                            <small>
+                                                Devolução nº {totalDevolucoes}
+                                            </small>
+
+                                        )
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div className="alertaCorrecaoConteudo">
+
+                            <p className="alertaCorrecaoMensagem">
+                                Sua solicitação precisa de ajustes antes de ser analisada novamente.
+                            </p>
+
+                            <div className="alertaCorrecaoMotivoWrap">
+
+                                <span className="alertaCorrecaoLabel">
+                                    Motivo da devolução
+                                </span>
+
+                                <div className="alertaCorrecaoMotivo">
+                                    {
+                                        motivoAtualDevolucao
+                                    }
+                                </div>
+
+                            </div>
+
+                            {
+                                onEditarCorrecao && (
+
+                                    <button
+                                        type="button"
+                                        className="alertaCorrecaoBotao"
+                                        onClick={onEditarCorrecao}
+                                    >
+                                        ✏️ CORRIGIR SOLICITAÇÃO
+                                    </button>
+
+                                )
+                            }
+
+                        </div>
+
+                    </section>
+
+                )
+            }
 
 
             {/* =====================================
@@ -534,6 +977,73 @@ function ResumoSolicitacaoVisualizacao({
                 </div>
 
             </section>
+
+
+            {/* =====================================
+                CADASTRO ADMINISTRATIVO PARA CONFERÊNCIA
+            ===================================== */}
+
+            {
+                mostrarCadastroAdministrativoCompleto && (
+
+                    <section className="secaoResumo">
+
+                        <div className="tituloSecao">
+
+                            🏢 Cadastro Administrativo
+
+                        </div>
+
+                        <div className="fichaTecnica">
+
+                            {Object.entries(dadosCadastro || {})
+                                .filter(([campo, valor]) =>
+                                    campo !== "descricaoAlteracao" &&
+                                    campo !== "atualizadoEm" &&
+                                    valor !== undefined &&
+                                    valor !== null &&
+                                    String(valor).trim() !== ""
+                                )
+                                .map(([campo, valor]) => (
+
+                                    <div key={campo}>
+
+                                        <span>
+                                            {nomesCampos[campo] || campo}
+                                        </span>
+
+                                        <strong>
+                                            {typeof valor === "object"
+                                                ? JSON.stringify(valor)
+                                                : String(valor)}
+                                        </strong>
+
+                                    </div>
+
+                                ))}
+
+                        </div>
+
+                        {cadastroAdministrativoAlteradoNestaSolicitacao && (
+
+                            <div className="campoGrande" style={{ marginTop: 18 }}>
+
+                                <span>
+                                    🔄 Cadastro atualizado nesta solicitação
+                                </span>
+
+                                <strong>
+                                    Os dados abaixo representam a versão atualizada enviada pela UT para conferência do ADMIN.
+                                </strong>
+
+                            </div>
+
+                        )}
+
+                    </section>
+
+                )
+            }
 
 
             {/* =====================================
@@ -1417,12 +1927,370 @@ function ResumoSolicitacaoVisualizacao({
 
 
             {/* =====================================
+                ACOMPANHAMENTO NO PORTAL DO CLIENTE
+            ===================================== */}
+
+            {
+                mostrarBlocoAcompanhamento && (
+
+                    <section className="secaoResumo">
+
+                        {
+                            acompanhamentoClienteSomenteLeitura ? (
+                                <>
+                                    <div className="tituloSecao">
+                                        📌 Acompanhamento do cliente — ciclo anterior
+                                    </div>
+
+                                    <div className="blocoAcompanhamentoCliente">
+                                        <div className="mensagemAcompanhamentoStatus reprovado">
+                                            🔴 Reprovado pelo cliente
+                                        </div>
+
+                                        <div className="campoAcompanhamentoCliente">
+                                            <label>
+                                                Motivo da reprovação:
+                                            </label>
+                                            <strong>
+                                                {motivoReprovacaoClientePersistido || "-"}
+                                            </strong>
+                                        </div>
+
+                                        <div className="campoAcompanhamentoCliente">
+                                            <label>
+                                                Data da reprovação:
+                                            </label>
+                                            <strong>
+                                                {formatarDataBrasileira(dataReprovacaoClientePersistida) || "-"}
+                                            </strong>
+                                        </div>
+
+                                        <div className="campoAcompanhamentoCliente">
+                                            <label>
+                                                Correção gerada:
+                                            </label>
+                                            <strong>
+                                                {solicitacaoRelacionadaProtocolo || solicitacaoRelacionadaId || "-"}
+                                            </strong>
+                                        </div>
+
+                                        <div className="acoesResumo acompanhamentoAcoes">
+                                            <button
+                                                type="button"
+                                                className="salvar"
+                                                onClick={() => onAbrirRelacionada && onAbrirRelacionada(solicitacaoRelacionadaId)}
+                                            >
+                                                Abrir solicitação relacionada
+                                            </button>
+                                        </div>
+
+                                        <div className="mensagemAcompanhamentoStatus reprovado" style={{ marginTop: 10 }}>
+                                            🔒 Este acompanhamento pertence ao ciclo anterior e não pode mais ser alterado.
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <form className="blocoAcompanhamentoCliente" onSubmit={salvarAcompanhamento}>
+
+                                    <div className="tituloSecao">
+                                        📌 Acompanhamento no portal do cliente
+                                    </div>
+
+                                    <div className="campoAcompanhamentoCliente">
+
+                                        <label>
+                                            Existe postagem em plataforma específica do cliente?
+                                        </label>
+
+                                        <div className="grupoOpcoesAcompanhamento">
+
+                                            <label className="opcaoAcompanhamento">
+                                                <input
+                                                    type="radio"
+                                                    name="clienteExigePostagem"
+                                                    checked={acompanhamentoCliente.clienteExigePostagem === true}
+                                                    disabled={solicitacaoConcluida || acompanhamentoClienteSomenteLeitura}
+                                                    onChange={() => setAcompanhamentoCliente((estado) => ({
+                                                        ...estado,
+                                                        clienteExigePostagem: true,
+                                                        statusAprovacaoCliente: estado.statusAprovacaoCliente || "aguardando",
+                                                        dataAguardandoRetorno: estado.dataAguardandoRetorno || new Date().toISOString().slice(0, 10),
+                                                        dataRespostaPostagem: new Date().toISOString().slice(0, 10)
+                                                    }))}
+                                                />
+                                                <span>Sim</span>
+                                            </label>
+
+                                            <label className="opcaoAcompanhamento">
+                                                <input
+                                                    type="radio"
+                                                    name="clienteExigePostagem"
+                                                    checked={acompanhamentoCliente.clienteExigePostagem === false}
+                                                    disabled={solicitacaoConcluida || acompanhamentoClienteSomenteLeitura}
+                                                    onChange={() => setAcompanhamentoCliente((estado) => ({
+                                                        ...estado,
+                                                        clienteExigePostagem: false,
+                                                        dataPostagemCliente: "",
+                                                        dataAguardandoRetorno: "",
+                                                        statusAprovacaoCliente: "",
+                                                        dataAprovacaoCliente: "",
+                                                        dataReprovacaoCliente: "",
+                                                        motivoReprovacaoCliente: ""
+                                                    }))}
+                                                />
+                                                <span>Não</span>
+                                            </label>
+
+                                        </div>
+
+                                    </div>
+
+                                    {
+                                        acompanhamentoCliente.clienteExigePostagem === false && (
+                                            <div className="mensagemAcompanhamentoSucesso">
+                                                ✅ Não existe postagem em plataforma específica do cliente.
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        mostrarCampoDataPostagem && (
+                                            <div className="campoAcompanhamentoCliente">
+                                                <label htmlFor="dataPostagemCliente">
+                                                    📅 Data da postagem na plataforma do cliente
+                                                </label>
+                                                <input
+                                                    id="dataPostagemCliente"
+                                                    type="date"
+                                                    value={acompanhamentoCliente.dataPostagemCliente || ""}
+                                                    disabled={solicitacaoConcluida || acompanhamentoClienteSomenteLeitura}
+                                                    onChange={(evento) => setAcompanhamentoCliente((estado) => ({
+                                                        ...estado,
+                                                        dataPostagemCliente: evento.target.value
+                                                    }))}
+                                                />
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        mostrarStatusAprovacao && (
+                                            <div className="campoAcompanhamentoCliente">
+                                                <label>
+                                                    Status da aprovação do cliente
+                                                </label>
+                                                <div className="grupoOpcoesAcompanhamento">
+
+                                                    <label className="opcaoAcompanhamento">
+                                                        <input
+                                                            type="radio"
+                                                            name="statusAprovacaoCliente"
+                                                            checked={acompanhamentoCliente.statusAprovacaoCliente === "aguardando"}
+                                                            disabled={solicitacaoConcluida || acompanhamentoClienteSomenteLeitura}
+                                                            onChange={() => setAcompanhamentoCliente((estado) => ({
+                                                                ...estado,
+                                                                statusAprovacaoCliente: "aguardando",
+                                                                dataAguardandoRetorno: new Date().toISOString().slice(0, 10),
+                                                                dataAprovacaoCliente: "",
+                                                                dataReprovacaoCliente: "",
+                                                                motivoReprovacaoCliente: ""
+                                                            }))}
+                                                        />
+                                                        <span>Aguardando retorno</span>
+                                                    </label>
+
+                                                    <label className="opcaoAcompanhamento">
+                                                        <input
+                                                            type="radio"
+                                                            name="statusAprovacaoCliente"
+                                                            checked={acompanhamentoCliente.statusAprovacaoCliente === "aprovado"}
+                                                            disabled={solicitacaoConcluida || acompanhamentoClienteSomenteLeitura}
+                                                            onChange={() => setAcompanhamentoCliente((estado) => ({
+                                                                ...estado,
+                                                                statusAprovacaoCliente: "aprovado",
+                                                                dataAguardandoRetorno: "",
+                                                                dataAprovacaoCliente: estado.dataAprovacaoCliente || new Date().toISOString().slice(0, 10),
+                                                                dataReprovacaoCliente: "",
+                                                                motivoReprovacaoCliente: ""
+                                                            }))}
+                                                        />
+                                                        <span>Aprovado</span>
+                                                    </label>
+
+                                                    <label className="opcaoAcompanhamento">
+                                                        <input
+                                                            type="radio"
+                                                            name="statusAprovacaoCliente"
+                                                            checked={acompanhamentoCliente.statusAprovacaoCliente === "reprovado"}
+                                                            disabled={solicitacaoConcluida || acompanhamentoClienteSomenteLeitura}
+                                                            onChange={() => setAcompanhamentoCliente((estado) => ({
+                                                                ...estado,
+                                                                statusAprovacaoCliente: "reprovado",
+                                                                dataAguardandoRetorno: "",
+                                                                dataAprovacaoCliente: "",
+                                                                dataReprovacaoCliente: estado.dataReprovacaoCliente || new Date().toISOString().slice(0, 10)
+                                                            }))}
+                                                        />
+                                                        <span>Reprovado</span>
+                                                    </label>
+
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        mostrarCampoDataAprovacao && (
+                                            <div className="campoAcompanhamentoCliente">
+                                                <label htmlFor="dataAprovacaoCliente">
+                                                    📅 Data da aprovação do cliente
+                                                </label>
+                                                <input
+                                                    id="dataAprovacaoCliente"
+                                                    type="date"
+                                                    value={acompanhamentoCliente.dataAprovacaoCliente || ""}
+                                                    disabled={solicitacaoConcluida || acompanhamentoClienteSomenteLeitura}
+                                                    onChange={(evento) => setAcompanhamentoCliente((estado) => ({
+                                                        ...estado,
+                                                        dataAprovacaoCliente: evento.target.value
+                                                    }))}
+                                                />
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        mostrarCampoMotivoReprovacao && (
+                                            <div className="campoAcompanhamentoCliente">
+                                                <label htmlFor="motivoReprovacaoCliente">
+                                                    Descreva os motivos da reprovação do cliente
+                                                </label>
+                                                <textarea
+                                                    id="motivoReprovacaoCliente"
+                                                    rows={5}
+                                                    value={acompanhamentoCliente.motivoReprovacaoCliente || ""}
+                                                    disabled={solicitacaoConcluida || acompanhamentoClienteSomenteLeitura}
+                                                    onChange={(evento) => setAcompanhamentoCliente((estado) => ({
+                                                        ...estado,
+                                                        motivoReprovacaoCliente: evento.target.value
+                                                    }))}
+                                                    placeholder="Descreva os motivos da reprovação do cliente"
+                                                />
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        !solicitacaoConcluida && (
+                                            acompanhamentoCliente.statusAprovacaoCliente === "reprovado" &&
+                                            acompanhamentoCliente.motivoReprovacaoCliente && (
+                                                <div className="mensagemAcompanhamentoStatus reprovado">
+                                                    🔴 Documento reprovado pelo cliente
+                                                </div>
+                                            )
+                                        )
+                                    }
+
+                                    {
+                                        clienteAprovouDocumento && (
+                                            <div className="mensagemAcompanhamentoStatus">
+                                                ✅ Documento aprovado pelo cliente
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        clienteAprovouDocumento && (
+                                            <div className="campoAcompanhamentoCliente">
+                                                <label>
+                                                    Data da aprovação:
+                                                </label>
+                                                <strong>
+                                                    {formatarDataBrasileira(
+                                                        dadosSolicitacaoCompleta?.dataAprovacaoCliente
+                                                    ) || "-"}
+                                                </strong>
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        solicitacaoConcluida && (
+                                            <div className="campoAcompanhamentoCliente">
+                                                <label>
+                                                    Solicitação concluída em:
+                                                </label>
+                                                <strong>
+                                                    {formatarDataBrasileira(
+                                                        dadosSolicitacaoCompleta?.concluidaEm
+                                                    ) || "-"}
+                                                </strong>
+                                            </div>
+                                        )
+                                    }
+
+                                    {
+                                        !solicitacaoConcluida &&
+                                            !acompanhamentoClienteSomenteLeitura && (
+                                                acompanhamentoCliente.statusAprovacaoCliente === "reprovado" &&
+                                                onAvancarParaCorrecao && (
+                                                    <div className="acoesResumo acompanhamentoAcoes">
+                                                        <button
+                                                            type="button"
+                                                            className="salvar"
+                                                            onClick={() => onAvancarParaCorrecao(acompanhamentoCliente.motivoReprovacaoCliente)}
+                                                        >
+                                                            AVANÇAR PARA CORREÇÃO
+                                                        </button>
+                                                    </div>
+                                                )
+                                            )
+                                    }
+
+                                    {
+                                        !solicitacaoConcluida && (
+                                            onSalvarAcompanhamentoCliente &&
+                                            deveSalvarAcompanhamento && (
+                                                <div className="acoesResumo acompanhamentoAcoes">
+                                                    <button type="submit" className="salvar">
+                                                        Salvar acompanhamento
+                                                    </button>
+                                                </div>
+                                            )
+                                        )
+                                    }
+
+                                    {
+                                        !solicitacaoConcluida &&
+                                            onConcluirAcompanhamentoCliente &&
+                                            deveConcluirSolicitacao && (
+                                                <div className="acoesResumo acompanhamentoAcoes">
+                                                    <button type="button" className="salvar" onClick={concluirSolicitacao}>
+                                                        ✅ CONCLUIR SOLICITAÇÃO
+                                                    </button>
+                                                </div>
+                                            )
+                                    }
+
+                                </form>
+                            )
+                        }
+
+                    </section>
+
+                )
+            }
+
+            {/* =====================================
                 RODAPÉ / AÇÕES
                 SOMENTE ADMIN
             ===================================== */}
 
             {
-                podeExecutarAcoes && (
+                (
+                    podeExecutarAcoes ||
+                    podeEditarCorrecaoUT
+                ) && (
 
                     <footer className="rodapeResumo">
 
@@ -1432,7 +2300,8 @@ function ResumoSolicitacaoVisualizacao({
                         ============================ */}
 
                         {
-                            mostrarEditarCorrecao && (
+                            mostrarEditarCorrecao &&
+                            onEditarCorrecao && (
 
                                 <div className="acoesResumo">
 
@@ -1448,7 +2317,11 @@ function ResumoSolicitacaoVisualizacao({
 
                                     >
 
-                                        ✏️ Editar Correção
+                                        ✏️ {
+                                            ehAdministrador
+                                                ? "Editar Correção"
+                                                : "Corrigir Solicitação"
+                                        }
 
                                     </button>
 
@@ -1463,6 +2336,7 @@ function ResumoSolicitacaoVisualizacao({
                         ============================ */}
 
                         {
+                            podeExecutarAcoes &&
                             mostrarAnalise && (
 
                                 <div className="acoesResumo">

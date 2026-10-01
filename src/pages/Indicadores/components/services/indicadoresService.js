@@ -9,7 +9,8 @@ const indicadoresService = {
 
     async buscarIndicadores(
         ano = 2026,
-        mes = ""
+        mes = "",
+        filtros = {}
     ) {
 
         const snapshotSolicitacoes=await getDocs(
@@ -29,6 +30,128 @@ const indicadoresService = {
             )
 
         );
+
+        const modalidadeFiltro =
+            String(filtros.modalidade || "all").trim();
+
+        const statusFiltro =
+            String(filtros.status || "all").trim();
+
+        const utFiltro =
+            String(filtros.ut || "all").trim();
+
+        const dataInicioFiltro =
+            filtros.dataInicio
+                ? new Date(filtros.dataInicio)
+                : null;
+
+        const dataFimFiltro =
+            filtros.dataFim
+                ? new Date(filtros.dataFim)
+                : null;
+
+        if (dataInicioFiltro) {
+            dataInicioFiltro.setHours(0, 0, 0, 0);
+        }
+
+        if (dataFimFiltro) {
+            dataFimFiltro.setHours(23, 59, 59, 999);
+        }
+
+        const dadosFiltrados =
+            snapshotSolicitacoes.docs
+                .map((doc) => ({
+                    id: doc.id,
+                    ...doc.data()
+                }))
+                .filter((dados) => {
+                    const tipoSolicitacao =
+                        String(
+                            dados.tipoSolicitacao ||
+                            dados.revisaoAnual?.tipoSolicitacao ||
+                            ""
+                        ).trim();
+
+                    const statusAtual =
+                        String(
+                            dados.status ||
+                            dados.revisaoAnual?.status ||
+                            ""
+                        ).trim();
+
+                    const numeroUT =
+                        String(
+                            dados.dadosCadastro?.numeroUT ||
+                            dados.ut ||
+                            dados.numeroUT ||
+                            ""
+                        ).trim();
+
+                    const criadoEm =
+                        dados.criadoEm?.toDate?.()
+                            ??
+                        (
+                            dados.criadoEm
+                                ? new Date(dados.criadoEm)
+                                : null
+                        );
+
+                    if (
+                        modalidadeFiltro !== "all" &&
+                        tipoSolicitacao !== modalidadeFiltro
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        statusFiltro !== "all" &&
+                        statusAtual !== statusFiltro
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        utFiltro !== "all" &&
+                        numeroUT !== utFiltro
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        dataInicioFiltro &&
+                        criadoEm &&
+                        criadoEm < dataInicioFiltro
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        dataFimFiltro &&
+                        criadoEm &&
+                        criadoEm > dataFimFiltro
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        criadoEm &&
+                        criadoEm.getFullYear() !== Number(ano)
+                    ) {
+                        return false;
+                    }
+
+                    if (
+                        criadoEm &&
+                        mes !== "" &&
+                        criadoEm.getMonth() !== Number(mes) - 1
+                    ) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
+        const solicitacoesFiltradas = dadosFiltrados;
 
        /* =====================================
    MAPA DAS UTs
@@ -175,9 +298,7 @@ const mesesAno = [
    CALCULA PLANEJADO E REALIZADO
 ===================================== */
 
-snapshotSolicitacoes.forEach((doc) => {
-
-    const dados = doc.data();
+solicitacoesFiltradas.forEach((dados) => {
 
     const criadoEm =
         dados.criadoEm?.toDate?.();
@@ -258,9 +379,7 @@ mesesAno.forEach((mesNome, indiceMes) => {
 
     let abertas = 0;
 
-    snapshotSolicitacoes.forEach((doc) => {
-
-        const dados = doc.data();
+    solicitacoesFiltradas.forEach((dados) => {
 
         const criadoEm =
             dados.criadoEm?.toDate?.();
@@ -342,9 +461,7 @@ mesesAno.forEach((mesNome) => {
            SOLICITAÇÕES
         ====================================== */
 
-        snapshotSolicitacoes.forEach((doc)=>{
-
-            const dados=doc.data();
+        solicitacoesFiltradas.forEach((dados)=>{
 
             const documentos=dados.documentos || {};
 
@@ -1026,10 +1143,7 @@ snapshotUTs.forEach((doc)=>{
    REVISÕES ANUAIS RENOVADAS
 =========================== */
 
-snapshotSolicitacoes.forEach((doc)=>{
-
-    const dados =
-        doc.data();
+solicitacoesFiltradas.forEach((dados)=>{
 
     const tipoSolicitacao =
         dados.tipoSolicitacao ||
@@ -1223,7 +1337,541 @@ const mediaPorDocumento =
         };
 
         /* =====================================
-           RETORNO
+           INDICADORES DE DEVOLUÇÕES
+        ====================================== */
+
+        const filtroUT =
+            String(
+                filtros.ut || "all"
+            ).trim();
+
+        const dataInicio =
+            filtros.dataInicio
+                ? new Date(filtros.dataInicio)
+                : null;
+
+        const dataFim =
+            filtros.dataFim
+                ? new Date(filtros.dataFim)
+                : null;
+
+        if (dataInicio) {
+
+            dataInicio.setHours(0, 0, 0, 0);
+
+        }
+
+        if (dataFim) {
+
+            dataFim.setHours(23, 59, 59, 999);
+
+        }
+
+        const totalSolicitacoesDevolucao =
+            dadosFiltrados.length;
+
+        const totalDevolucoes =
+            dadosFiltrados.reduce(
+                (soma, item) =>
+                    soma + Number(item.totalDevolucoes || 0),
+                0
+            );
+
+        const solicitacoesComCorrecao =
+            dadosFiltrados.filter(
+                (item) =>
+                    Number(item.totalDevolucoes || 0) >= 1
+            ).length;
+
+        const solicitacoesCom2Mais =
+            dadosFiltrados.filter(
+                (item) =>
+                    Number(item.totalDevolucoes || 0) >= 2
+            ).length;
+
+        const aprovadasPrimeiraAnalise =
+            dadosFiltrados.filter(
+                (item) =>
+                    Number(item.totalDevolucoes || 0) === 0
+            ).length;
+
+        const taxaRetrabalho =
+            totalSolicitacoesDevolucao === 0
+                ? 0
+                : (
+                    solicitacoesComCorrecao /
+                    totalSolicitacoesDevolucao
+                ) * 100;
+
+        const mediaDevolucoes =
+            solicitacoesComCorrecao === 0
+                ? 0
+                : totalDevolucoes / solicitacoesComCorrecao;
+
+        const mapaMotivos = new Map();
+
+        dadosFiltrados.forEach((item) => {
+
+            const historico =
+                Array.isArray(item.historicoDevolucoes)
+                    ? item.historicoDevolucoes
+                    : [];
+
+            historico.forEach((devolucao) => {
+
+                const motivo =
+                    String(
+                        devolucao?.motivo || ""
+                    ).trim() || "Motivo não informado";
+
+                mapaMotivos.set(
+                    motivo,
+                    (mapaMotivos.get(motivo) || 0) + 1
+                );
+
+            });
+
+        });
+
+        const topMotivos =
+            Array.from(mapaMotivos.entries())
+                .map(([motivo, quantidade]) => ({
+                    motivo,
+                    quantidade
+                }))
+                .sort((a, b) => b.quantidade - a.quantidade)
+                .slice(0, 10);
+
+        const distribuicaoDevolucoes = {
+            zero:
+                dadosFiltrados.filter(
+                    (item) => Number(item.totalDevolucoes || 0) === 0
+                ).length,
+            um:
+                dadosFiltrados.filter(
+                    (item) => Number(item.totalDevolucoes || 0) === 1
+                ).length,
+            dois:
+                dadosFiltrados.filter(
+                    (item) => Number(item.totalDevolucoes || 0) === 2
+                ).length,
+            tres:
+                dadosFiltrados.filter(
+                    (item) => Number(item.totalDevolucoes || 0) === 3
+                ).length,
+            quatroMais:
+                dadosFiltrados.filter(
+                    (item) => Number(item.totalDevolucoes || 0) >= 4
+                ).length
+        };
+
+        const mapaUTsDevolucoes = {};
+
+        dadosFiltrados.forEach((item) => {
+
+            const ut =
+                String(
+                    item.dadosCadastro?.numeroUT ||
+                    item.ut ||
+                    item.numeroUT ||
+                    "Não informado"
+                ).trim() || "Não informado";
+
+            if (!mapaUTsDevolucoes[ut]) {
+
+                mapaUTsDevolucoes[ut] = {
+                    ut,
+                    totalSolicitacoes: 0,
+                    aprovadasPrimeiraAnalise: 0,
+                    solicitacoesComCorrecao: 0,
+                    solicitacoesCom2Mais: 0,
+                    totalDevolucoes: 0
+                };
+
+            }
+
+            const devolucoesUT = Number(item.totalDevolucoes || 0);
+
+            mapaUTsDevolucoes[ut].totalSolicitacoes += 1;
+
+            if (devolucoesUT === 0) {
+
+                mapaUTsDevolucoes[ut].aprovadasPrimeiraAnalise += 1;
+
+            }
+
+            if (devolucoesUT >= 1) {
+
+                mapaUTsDevolucoes[ut].solicitacoesComCorrecao += 1;
+
+            }
+
+            if (devolucoesUT >= 2) {
+
+                mapaUTsDevolucoes[ut].solicitacoesCom2Mais += 1;
+
+            }
+
+            mapaUTsDevolucoes[ut].totalDevolucoes += devolucoesUT;
+
+        });
+
+        const utDetalhe =
+            Object.values(mapaUTsDevolucoes)
+                .map((ut) => ({
+                    ...ut,
+                    percentualRetrabalho:
+                        ut.totalSolicitacoes === 0
+                            ? 0
+                            : (ut.solicitacoesComCorrecao / ut.totalSolicitacoes) * 100
+                }))
+                .sort((a, b) => b.totalDevolucoes - a.totalDevolucoes);
+
+        const mesesOrdenados = [
+            "Jan",
+            "Fev",
+            "Mar",
+            "Abr",
+            "Mai",
+            "Jun",
+            "Jul",
+            "Ago",
+            "Set",
+            "Out",
+            "Nov",
+            "Dez"
+        ];
+
+        const evolucaoMensal =
+            mesesOrdenados.map((mesNome, index) => {
+
+                const totalSolicitacoesMes =
+                    dadosFiltrados.filter((item) => {
+
+                        const criadoEm = item.criadoEm?.toDate?.()
+                            ?? (item.criadoEm ? new Date(item.criadoEm) : null);
+
+                        return criadoEm &&
+                            criadoEm.getFullYear() === Number(ano) &&
+                            criadoEm.getMonth() === index;
+
+                    }).length;
+
+                const totalDevolucoesMes =
+                    dadosFiltrados.reduce((soma, item) => {
+
+                        const criadoEm = item.criadoEm?.toDate?.()
+                            ?? (item.criadoEm ? new Date(item.criadoEm) : null);
+
+                        if (
+                            criadoEm &&
+                            criadoEm.getFullYear() === Number(ano) &&
+                            criadoEm.getMonth() === index
+                        ) {
+
+                            return soma + Number(item.totalDevolucoes || 0);
+
+                        }
+
+                        return soma;
+
+                    }, 0);
+
+                return {
+                    mes: mesNome,
+                    totalSolicitacoes: totalSolicitacoesMes,
+                    totalDevolucoes: totalDevolucoesMes
+                };
+
+            });
+
+        const utOptions =
+            Array.from(
+                new Set(
+                    snapshotUTs.docs
+                        .map((doc) => doc.data())
+                        .map((ut) => String(ut.numeroUT || "").trim())
+                        .filter(Boolean)
+                        .concat(
+                            dadosFiltrados.map((item) =>
+                                String(
+                                    item.dadosCadastro?.numeroUT ||
+                                    item.ut ||
+                                    item.numeroUT ||
+                                    ""
+                                ).trim()
+                            )
+                        )
+                        .filter(Boolean)
+                )
+            ).sort();
+
+        const devolucoesCards = {
+            totalSolicitacoes: totalSolicitacoesDevolucao,
+            aprovadasPrimeiraAnalise,
+            solicitacoesComCorrecao,
+            solicitacoesCom2Mais,
+            totalDevolucoes,
+            taxaRetrabalho: Number(taxaRetrabalho.toFixed(1)),
+            mediaDevolucoes: Number(mediaDevolucoes.toFixed(1))
+        };
+
+        const toDateValue = (valor) => {
+            if (!valor) return null;
+            if (valor instanceof Date) return Number.isNaN(valor.getTime()) ? null : valor;
+            if (valor.toDate) {
+                const data = valor.toDate();
+                return Number.isNaN(data.getTime()) ? null : data;
+            }
+            if (typeof valor === "string") {
+                const data = new Date(valor);
+                return Number.isNaN(data.getTime()) ? null : data;
+            }
+            if (typeof valor === "number") {
+                const data = new Date(valor);
+                return Number.isNaN(data.getTime()) ? null : data;
+            }
+            return null;
+        };
+
+        const diferencaDias = (inicio, fim) => {
+            if (!inicio || !fim) return null;
+            const diff = fim.getTime() - inicio.getTime();
+            return Number((diff / 86400000).toFixed(1));
+        };
+
+        const obterNumeroUT = (item) =>
+            String(
+                item?.dadosCadastro?.numeroUT ||
+                item?.ut ||
+                item?.numeroUT ||
+                ""
+            ).trim();
+
+        const solicitacoesComPostagemCliente =
+            dadosFiltrados.filter((item) => item.clienteExigePostagem === true);
+
+        const dataDisponibilizacao = (item) => {
+            const documentos = item?.documentos || {};
+            const datas = [
+                toDateValue(documentos?.pgr?.[0]?.enviadoEm),
+                toDateValue(documentos?.pgr?.[0]?.dataDisponibilizacao),
+                toDateValue(documentos?.pcmso?.[0]?.enviadoEm),
+                toDateValue(documentos?.pcmso?.[0]?.dataDisponibilizacao),
+                toDateValue(item?.dataDisponibilizacaoPGR),
+                toDateValue(item?.dataDisponibilizacaoPCMSO),
+                toDateValue(item?.dataDisponibilizacao)
+            ].filter(Boolean);
+
+            if (datas.length === 0) {
+                return null;
+            }
+
+            datas.sort((a, b) => a.getTime() - b.getTime());
+            return datas[datas.length - 1];
+        };
+
+        const itensComPostagem =
+            solicitacoesComPostagemCliente.filter((item) => !!toDateValue(item?.dataPostagemCliente));
+
+        const itensSemPostagem =
+            solicitacoesComPostagemCliente.filter((item) => !toDateValue(item?.dataPostagemCliente));
+
+        const itensComRetorno =
+            solicitacoesComPostagemCliente.filter((item) => {
+                const status = String(item?.statusAprovacaoCliente || "").trim().toLowerCase();
+                return status === "aprovado" || status === "reprovado" ||
+                    !!toDateValue(item?.dataAprovacaoCliente) ||
+                    !!toDateValue(item?.dataReprovacaoCliente);
+            });
+
+        const itensAguardandoRetorno =
+            solicitacoesComPostagemCliente.filter((item) => {
+                const dataPostagem = toDateValue(item?.dataPostagemCliente);
+                return !!dataPostagem && String(item?.statusAprovacaoCliente || "").trim().toLowerCase() === "aguardando";
+            });
+
+        const idsReprovados = new Set();
+        const totalReprovacoesHistorico = solicitacoesComPostagemCliente.reduce((total, item) => {
+            const historico = Array.isArray(item?.historicoPortalCliente) ? item.historicoPortalCliente : [];
+            const reprovacaoAtual = String(item?.statusAprovacaoCliente || "").trim().toLowerCase() === "reprovado" || !!toDateValue(item?.dataReprovacaoCliente);
+
+            if (reprovacaoAtual) {
+                idsReprovados.add(item.id);
+            }
+
+            const eventosReprovacao = historico.filter((evento) => evento?.tipo === "reprovacao");
+            if (eventosReprovacao.length > 0) {
+                idsReprovados.add(item.id);
+            }
+
+            return total + eventosReprovacao.length;
+        }, 0);
+
+        const documentosReprovados = idsReprovados.size;
+
+        const slaMedioPostagem =
+            itensComPostagem.length === 0
+                ? 0
+                : Number((
+                    itensComPostagem.reduce((soma, item) => {
+                        const inicio = dataDisponibilizacao(item);
+                        const fim = toDateValue(item.dataPostagemCliente);
+                        const dias = diferencaDias(inicio, fim);
+                        return soma + (Number.isFinite(dias) ? dias : 0);
+                    }, 0) / itensComPostagem.length
+                ).toFixed(1));
+
+        const slaMedioRetorno =
+            itensComRetorno.length === 0
+                ? 0
+                : Number((
+                    itensComRetorno.reduce((soma, item) => {
+                        const inicio = toDateValue(item.dataPostagemCliente);
+                        const dataAprovacao = toDateValue(item.dataAprovacaoCliente);
+                        const dataReprovacao = toDateValue(item.dataReprovacaoCliente);
+                        const fim = dataAprovacao && dataReprovacao
+                            ? new Date(Math.min(dataAprovacao.getTime(), dataReprovacao.getTime()))
+                            : dataAprovacao || dataReprovacao;
+                        const dias = diferencaDias(inicio, fim);
+                        return soma + (Number.isFinite(dias) ? dias : 0);
+                    }, 0) / itensComRetorno.length
+                ).toFixed(1));
+
+        const indiceReprovacao =
+            itensComRetorno.length === 0
+                ? 0
+                : Number((
+                    (documentosReprovados / itensComRetorno.length) * 100
+                ).toFixed(1));
+
+        const mapaUTAcompanhamento = {};
+
+        solicitacoesComPostagemCliente.forEach((item) => {
+            const ut = obterNumeroUT(item) || "Não informado";
+            if (!mapaUTAcompanhamento[ut]) {
+                mapaUTAcompanhamento[ut] = {
+                    ut,
+                    documentosComPostagem: 0,
+                    postados: 0,
+                    aguardandoPostagem: 0,
+                    totalDiasPostagem: 0,
+                    totalDiasRetorno: 0,
+                    aguardandoRetorno: 0,
+                    reprovados: 0,
+                    aprovados: 0,
+                    retornoRecebido: 0
+                };
+            }
+
+            const registro = mapaUTAcompanhamento[ut];
+            registro.documentosComPostagem += 1;
+
+            const postagem = toDateValue(item?.dataPostagemCliente);
+            if (postagem) {
+                registro.postados += 1;
+                const disponibilidade = dataDisponibilizacao(item);
+                const diasPostagem = diferencaDias(disponibilidade, postagem);
+                if (Number.isFinite(diasPostagem)) {
+                    registro.totalDiasPostagem += diasPostagem;
+                }
+            }
+            else {
+                registro.aguardandoPostagem += 1;
+            }
+
+            const statusAprovacao = String(item?.statusAprovacaoCliente || "").trim().toLowerCase();
+            if (statusAprovacao === "aguardando" && postagem) {
+                registro.aguardandoRetorno += 1;
+            }
+
+            const dataAprovacao = toDateValue(item?.dataAprovacaoCliente);
+            const dataReprovacao = toDateValue(item?.dataReprovacaoCliente);
+            const retorno = dataAprovacao || dataReprovacao;
+            if (retorno) {
+                registro.retornoRecebido += 1;
+                if (statusAprovacao === "aprovado") {
+                    registro.aprovados += 1;
+                }
+                if (statusAprovacao === "reprovado") {
+                    registro.reprovados += 1;
+                }
+
+                const inicioRetorno = postagem;
+                const fimRetorno = dataAprovacao && dataReprovacao
+                    ? new Date(Math.min(dataAprovacao.getTime(), dataReprovacao.getTime()))
+                    : dataAprovacao || dataReprovacao;
+                const diasRetorno = diferencaDias(inicioRetorno, fimRetorno);
+                if (Number.isFinite(diasRetorno)) {
+                    registro.totalDiasRetorno += diasRetorno;
+                }
+            }
+        });
+
+        const slaPostagemPorUT = Object.values(mapaUTAcompanhamento)
+            .map((ut) => ({
+                ut: ut.ut,
+                documentosComPostagem: ut.documentosComPostagem,
+                postados: ut.postados,
+                slaMedioPostagem: ut.postados === 0 ? 0 : Number((ut.totalDiasPostagem / ut.postados).toFixed(1)),
+                aguardandoPostagem: ut.aguardandoPostagem
+            }))
+            .filter((ut) => ut.documentosComPostagem > 0)
+            .sort((a, b) => Number(b.slaMedioPostagem || 0) - Number(a.slaMedioPostagem || 0));
+
+        const slaRetornoPorUT = Object.values(mapaUTAcompanhamento)
+            .map((ut) => ({
+                ut: ut.ut,
+                postados: ut.postados,
+                retornoRecebido: ut.retornoRecebido,
+                slaMedioRetorno: ut.retornoRecebido === 0 ? 0 : Number((ut.totalDiasRetorno / ut.retornoRecebido).toFixed(1))
+            }))
+            .filter((ut) => ut.retornoRecebido > 0)
+            .sort((a, b) => Number(b.slaMedioRetorno || 0) - Number(a.slaMedioRetorno || 0));
+
+        const reprovaçõesPorUT = Object.values(mapaUTAcompanhamento)
+            .map((ut) => ({
+                ut: ut.ut,
+                reprovados: ut.reprovados,
+                indiceReprovacao: ut.retornoRecebido === 0 ? 0 : Number(((ut.reprovados / ut.retornoRecebido) * 100).toFixed(1))
+            }))
+            .filter((ut) => ut.reprovados > 0 || ut.indiceReprovacao > 0)
+            .sort((a, b) => Number(b.reprovados || 0) - Number(a.reprovados || 0));
+
+        const tabelaUT = Object.values(mapaUTAcompanhamento)
+            .map((ut) => ({
+                ut: ut.ut,
+                documentosComPostagem: ut.documentosComPostagem,
+                postados: ut.postados,
+                aguardandoPostagem: ut.aguardandoPostagem,
+                slaMedioPostagem: ut.postados === 0 ? 0 : Number((ut.totalDiasPostagem / ut.postados).toFixed(1)),
+                aguardandoRetorno: ut.aguardandoRetorno,
+                slaMedioRetorno: ut.retornoRecebido === 0 ? 0 : Number((ut.totalDiasRetorno / ut.retornoRecebido).toFixed(1)),
+                aprovados: ut.aprovados,
+                reprovados: ut.reprovados,
+                indiceReprovacao: ut.retornoRecebido === 0 ? 0 : Number(((ut.reprovados / ut.retornoRecebido) * 100).toFixed(1))
+            }))
+            .sort((a, b) => Number(b.documentosComPostagem || 0) - Number(a.documentosComPostagem || 0));
+
+        const acompanhamentoPosDisponibilizacao = {
+            cards: {
+                documentosComPostagemExigida: solicitacoesComPostagemCliente.length,
+                slaMedioPostagem,
+                aguardandoPostagem: itensSemPostagem.length,
+                slaMedioRetorno,
+                aguardandoRetorno: itensAguardandoRetorno.length,
+                documentosReprovados,
+                indiceReprovacao,
+                totalRetornos: itensComRetorno.length,
+                totalReprovacoesHistorico
+            },
+            slaPostagemPorUT,
+            slaRetornoPorUT,
+            reprovaçõesPorUT,
+            tabelaUT
+        };
+
+        /* =====================================
         ====================================== */
 /* =====================================
    SLA - PREPARA DADOS DO GRÁFICO
@@ -1403,7 +2051,21 @@ const graficoSLA = Object.entries(
 
     complexidadeMensal,
 
-    slaMensal
+    slaMensal,
+
+    devolucoesCards,
+
+    topMotivos,
+
+    distribuicaoDevolucoes,
+
+    utDetalhe,
+
+    evolucaoMensal,
+
+    utOptions,
+
+    acompanhamentoPosDisponibilizacao
 
 };
     }

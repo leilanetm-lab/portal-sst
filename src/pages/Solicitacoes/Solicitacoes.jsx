@@ -610,7 +610,17 @@ function Solicitacoes() {
                         // CADASTRO ADMINISTRATIVO
                         // =====================================
 
-                        dadosCadastro
+                        dadosCadastro,
+
+                        // Na 1ª solicitação, o cadastro completo acompanha
+                        // o resumo para conferência do ADMIN. Nas seguintes,
+                        // só acompanha novamente quando a UT informa alteração.
+                        cadastroAdministrativoPrimeiraSolicitacao:
+                            !cadastroAdministrativo,
+
+                        cadastroAdministrativoAlteradoNestaSolicitacao:
+                            !!cadastroAdministrativo &&
+                            houveAlteracaoCadastro === "sim"
 
                     }
 

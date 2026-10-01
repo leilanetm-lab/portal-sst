@@ -127,6 +127,8 @@
 
     gap: 16px;
 
+    cursor: pointer;
+
     transition:
         transform .2s ease,
         box-shadow .2s ease;
